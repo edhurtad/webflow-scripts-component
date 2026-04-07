@@ -1,0 +1,13 @@
+{
+  "name": "webflow-scripts-component",
+  "version": "1.0.0",
+  "description": "Componentes reutilizables para Webflow",
+  "type": "module",
+  "main": "src/main/index.js",
+  "scripts": {
+    "dev": "node src/main/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
