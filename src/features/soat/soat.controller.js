@@ -1,7 +1,10 @@
-import { APP_CONFIG } from '../../shared/config/app.config.js';
 import { SoatView } from './soat.view.js';
 import { validateSoatForm } from './soat.validation.js';
 import { requestSoatQuote } from './soat.service.js';
+import {
+  createMosparoInstance,
+  getMosparoTokens
+} from './soat.mosparo.service.js';
 
 export class SoatController {
   constructor() {
@@ -13,62 +16,15 @@ export class SoatController {
     return this.view.hasForm();
   }
 
-  waitForMosparo(maxAttempts = 40, delay = 250) {
-    return new Promise((resolve, reject) => {
-      let attempts = 0;
-
-      const check = () => {
-        attempts += 1;
-
-        if (window.mosparo) {
-          resolve(window.mosparo);
-          return;
-        }
-
-        if (attempts >= maxAttempts) {
-          reject(new Error('Mosparo no cargó a tiempo.'));
-          return;
-        }
-
-        setTimeout(check, delay);
-      };
-
-      check();
-    });
-  }
-
   async initMosparo() {
     try {
-      const Mosparo = await this.waitForMosparo();
-
-      this.mosparoInstance = new Mosparo(
-        'mosparo-box',
-        APP_CONFIG.mosparo.host,
-        APP_CONFIG.mosparo.uuid,
-        APP_CONFIG.mosparo.publicKey,
-        { designMode: false }
-      );
+      this.mosparoInstance = await createMosparoInstance();
     } catch (error) {
       this.view.showMessage(
         'No fue posible cargar la validación de seguridad.',
         'error'
       );
     }
-  }
-
-  getMosparoTokens() {
-    const formElement = this.view.dom.form;
-
-    const submitToken =
-      formElement?.querySelector('[name="_mosparo_submitToken"]')?.value || '';
-
-    const validationToken =
-      formElement?.querySelector('[name="_mosparo_validationToken"]')?.value || '';
-
-    return {
-      submitToken,
-      validationToken
-    };
   }
 
   showValidationErrors(errors) {
@@ -96,7 +52,7 @@ export class SoatController {
       return;
     }
 
-    const { submitToken, validationToken } = this.getMosparoTokens();
+    const { submitToken, validationToken } = getMosparoTokens(this.view.dom.form);
 
     if (!submitToken || !validationToken) {
       this.view.showMessage(
