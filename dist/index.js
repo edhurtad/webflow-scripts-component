@@ -1,1 +1,3 @@
-console.log("Webflow cargando componente");
+import { initSoat } from '../src/features/soat/soat.init.js';
+
+window.initSoat = initSoat;
