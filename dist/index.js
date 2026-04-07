@@ -1,3 +1,8 @@
-import { initSoat } from '../src/features/soat/soat.init.js';
+import { SoatController } from '../features/soat/soat.controller.js';
 
-window.initSoat = initSoat;
+const init = () => {
+  const soatController = new SoatController();
+  soatController.init();
+};
+
+document.addEventListener('DOMContentLoaded', init);

@@ -59,10 +59,16 @@ export class SoatController {
   getMosparoTokens() {
     const formElement = this.view.dom.form;
 
-    const submit = formElement?.querySelector('[name="_mosparo_submitToken"]')?.value || '';
-    const validation = formElement?.querySelector('[name="_mosparo_validationToken"]')?.value || '';
+    const submitToken =
+      formElement?.querySelector('[name="_mosparo_submitToken"]')?.value || '';
 
-    return { submit, validation };
+    const validationToken =
+      formElement?.querySelector('[name="_mosparo_validationToken"]')?.value || '';
+
+    return {
+      submitToken,
+      validationToken
+    };
   }
 
   showValidationErrors(errors) {
@@ -79,10 +85,10 @@ export class SoatController {
     this.view.resetResult();
 
     const formData = this.view.getFormData();
-    const validation = validateSoatForm(formData);
+    const validationResult = validateSoatForm(formData);
 
-    if (!validation.isValid) {
-      this.showValidationErrors(validation.errors);
+    if (!validationResult.isValid) {
+      this.showValidationErrors(validationResult.errors);
       this.view.showMessage(
         'Por favor, completa correctamente los campos.',
         'error'
@@ -90,9 +96,9 @@ export class SoatController {
       return;
     }
 
-    const { submit, validation: validationToken } = this.getMosparoTokens();
+    const { submitToken, validationToken } = this.getMosparoTokens();
 
-    if (!submit || !validationToken) {
+    if (!submitToken || !validationToken) {
       this.view.showMessage(
         'Completa la validación de seguridad.',
         'error'
@@ -103,7 +109,7 @@ export class SoatController {
     const payload = {
       formData: {
         ...Object.fromEntries(new FormData(this.view.dom.form).entries()),
-        _mosparo_submitToken: submit,
+        _mosparo_submitToken: submitToken,
         _mosparo_validationToken: validationToken
       }
     };

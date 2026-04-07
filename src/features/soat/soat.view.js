@@ -9,7 +9,8 @@ const getDOMElements = () => {
     inputs: {
       phone: document.querySelector('#phone'),
       plate: document.querySelector('#plate'),
-      identification: document.querySelector('#identification')
+      identification: document.querySelector('#identification'),
+      withAP: document.querySelector('#with-ap')
     },
     result: {
       container: document.querySelector('#soat-result'),
@@ -86,7 +87,7 @@ export class SoatView {
       phone: this.dom.inputs.phone?.value?.trim() || '',
       plate: this.dom.inputs.plate?.value?.trim() || '',
       identification: this.dom.inputs.identification?.value?.trim() || '',
-      withAP: document.querySelector('#with-ap')?.checked || false
+      withAP: this.dom.inputs.withAP?.checked || false
     };
   }
 
@@ -111,7 +112,7 @@ export class SoatView {
   resetResult() {
     this.dom.result.vehicleType.textContent = '-';
     this.dom.result.soatTotal.textContent = '$ 0';
-    this.dom.result.apValue.textContent = '$ 0';
+    this.dom.result.apValue.textContent = '-';
     this.dom.result.finalTotal.textContent = '$ 0';
   }
 
