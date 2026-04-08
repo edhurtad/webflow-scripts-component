@@ -1,5 +1,5 @@
 export const initSoat = () => {
-  console.log("SOAT initialized 🚀");
+  console.log("SOAT initialized");
 
   const form = document.querySelector('#soat-form');
 
