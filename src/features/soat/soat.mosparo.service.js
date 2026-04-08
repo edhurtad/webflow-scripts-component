@@ -28,12 +28,26 @@ export const createMosparoInstance = async () => {
   const Mosparo = await waitForMosparo();
 
   return new Mosparo(
-    'mosparo-box',
-    APP_CONFIG.mosparo.host,
-    APP_CONFIG.mosparo.uuid,
-    APP_CONFIG.mosparo.publicKey,
-    { designMode: false }
-  );
+  'mosparo-box',
+  APP_CONFIG.mosparo.host,
+  APP_CONFIG.mosparo.uuid,
+  APP_CONFIG.mosparo.publicKey,
+  {
+    designMode: false,
+    language: 'es_419',
+    customMessages: {
+      es_419: {
+        label: 'Confirmo que soy una persona'
+      },
+      es_CO: {
+        label: 'Confirmo que soy una persona'
+      },
+      es_ES: {
+        label: 'Confirmo que soy una persona'
+      }
+    }
+  }
+)
 };
 
 export const getMosparoTokens = (formElement) => {
