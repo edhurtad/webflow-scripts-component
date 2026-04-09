@@ -10,6 +10,10 @@ const isValidIdentification = (identification) => {
   return Boolean(identification && identification.trim().length > 0);
 };
 
+const isPrivacyAccepted = (privacyAccepted) => {
+  return privacyAccepted === true;
+};
+
 export const validateSoatForm = (formData) => {
   const errors = {};
 
@@ -23,6 +27,10 @@ export const validateSoatForm = (formData) => {
 
   if (!isValidIdentification(formData.identification)) {
     errors.identification = 'La cédula es obligatoria';
+  }
+
+  if (!isPrivacyAccepted(formData.privacyAccepted)) {
+    errors.privacyAccepted = 'Debes autorizar el tratamiento de datos';
   }
 
   return {

@@ -62,9 +62,12 @@ export class SoatController {
       return;
     }
 
+    const rawFormData = Object.fromEntries(new FormData(this.view.dom.form).entries());
+
     const payload = {
       formData: {
-        ...Object.fromEntries(new FormData(this.view.dom.form).entries()),
+        ...rawFormData,
+        privacyPolicy: formData.privacyAccepted,
         _mosparo_submitToken: submitToken,
         _mosparo_validationToken: validationToken
       }

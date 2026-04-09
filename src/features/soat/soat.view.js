@@ -6,11 +6,13 @@ const getDOMElements = () => {
     button: document.querySelector('#quote-btn'),
     message: document.querySelector('#sim-message'),
     fields: [...document.querySelectorAll('.soat-box-field')],
+    privacy: document.querySelector('.soat-privacy'),
     inputs: {
       phone: document.querySelector('#phone'),
       plate: document.querySelector('#plate'),
       identification: document.querySelector('#identification'),
-      withAP: document.querySelector('#with-ap')
+      withAP: document.querySelector('#with-ap'),
+      privacyPolicy: document.querySelector('#privacy-policy')
     },
     result: {
       container: document.querySelector('#soat-result'),
@@ -68,6 +70,12 @@ export class SoatView {
   }
 
   markFieldError(fieldName) {
+    // 👇 manejo especial para privacidad
+    if (fieldName === 'privacyAccepted') {
+      this.dom.privacy?.classList.add('is-error');
+      return;
+    }
+
     const input = this.dom.inputs[fieldName];
     const wrapper = input?.closest('.soat-box-field');
 
@@ -80,14 +88,18 @@ export class SoatView {
     this.dom.fields.forEach((field) => {
       field.classList.remove('is-error');
     });
+
+    this.dom.privacy?.classList.remove('is-error');
   }
 
+  // ✅ ÚNICO getFormData (corregido)
   getFormData() {
     return {
       phone: this.dom.inputs.phone?.value?.trim() || '',
       plate: this.dom.inputs.plate?.value?.trim() || '',
       identification: this.dom.inputs.identification?.value?.trim() || '',
-      withAP: this.dom.inputs.withAP?.checked || false
+      withAP: this.dom.inputs.withAP?.checked || false,
+      privacyAccepted: this.dom.inputs.privacyPolicy?.checked || false
     };
   }
 
