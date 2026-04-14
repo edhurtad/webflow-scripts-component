@@ -70,7 +70,6 @@ export class SoatView {
   }
 
   markFieldError(fieldName) {
-    // 👇 manejo especial para privacidad
     if (fieldName === 'privacyAccepted') {
       this.dom.privacy?.classList.add('is-error');
       return;
@@ -92,7 +91,6 @@ export class SoatView {
     this.dom.privacy?.classList.remove('is-error');
   }
 
-  // ✅ ÚNICO getFormData (corregido)
   getFormData() {
     return {
       phone: this.dom.inputs.phone?.value?.trim() || '',
@@ -104,22 +102,31 @@ export class SoatView {
   }
 
   renderResult(data) {
-    if (!data) return;
+  if (!data) return;
 
-    const apAvailable = Boolean(data.ApAvailable);
-    const apText = apAvailable
-      ? formatCurrency(data.Value_AP)
-      : 'No disponible';
+  const soatTotal = Number(data.TotalValue || 0);
+  const apAvailable = Boolean(data.ApAvailable);
+  const apValue = apAvailable ? Number(data.Value_AP || 0) : 0;
 
-    this.dom.result.vehicleType.textContent = data.VehicleTypeName || '-';
-    this.dom.result.soatTotal.textContent = formatCurrency(data.TotalValue);
-    this.dom.result.apValue.textContent = apText;
-    this.dom.result.finalTotal.textContent = formatCurrency(
-      data.TotalSummedValue || data.TotalValue
-    );
+  const apiFinalTotal = Number(data.TotalSummedValue || 0);
+  const calculatedFinalTotal = soatTotal + apValue;
 
-    this.dom.result.container.style.display = 'block';
-  }
+  const finalTotal =
+    apiFinalTotal > soatTotal
+      ? apiFinalTotal
+      : calculatedFinalTotal;
+
+  const apText = apAvailable
+    ? formatCurrency(apValue)
+    : 'No disponible';
+
+  this.dom.result.vehicleType.textContent = data.VehicleTypeName || '-';
+  this.dom.result.soatTotal.textContent = formatCurrency(soatTotal);
+  this.dom.result.apValue.textContent = apText;
+  this.dom.result.finalTotal.textContent = formatCurrency(finalTotal);
+
+  this.dom.result.container.style.display = 'block';
+}
 
   resetResult() {
     this.dom.result.vehicleType.textContent = '-';
