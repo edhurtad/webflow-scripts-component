@@ -1,4 +1,4 @@
-import { formatCurrency } from '../../shared/utils/formatters/currency.formatter.js';
+import { formatCurrency } from '../../../shared/utils/formatters/currency.formatter.js';
 
 const getDOMElements = () => {
   return {

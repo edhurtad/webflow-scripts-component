@@ -1,4 +1,4 @@
-import { APP_CONFIG } from '../../shared/config/app.config.js';
+import { APP_CONFIG } from '../../../shared/config/app.config.js' 
 
 
 export const requestSoatQuote = async (payload) => {
