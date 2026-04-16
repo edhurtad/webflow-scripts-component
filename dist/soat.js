@@ -1,4 +1,4 @@
-import { SoatController } from '../src/features/soat/soat.controller.js';
+import { SoatController } from '../src/features/soat/controllers/soat.controller.js';
 
 const init = () => {
   const soatController = new SoatController();
@@ -6,6 +6,3 @@ const init = () => {
 };
 
 document.addEventListener('DOMContentLoaded', init);
-
-
-

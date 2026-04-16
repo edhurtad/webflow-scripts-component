@@ -1,10 +1,10 @@
-import { SoatView } from './soat.view.js';
-import { validateSoatForm } from './soat.validation.js';
-import { requestSoatQuote } from './soat.service.js';
+import { SoatView } from '../soat.view.js';
+import { validateSoatForm } from '../validators/soat.validation.js';
+import { requestSoatQuote } from '../services/soat.service.js';
 import {
   createMosparoInstance,
   getMosparoTokens
-} from './soat.mosparo.service.js';
+} from '../services/soat.mosparo.service.js';
 
 export class SoatController {
   constructor() {

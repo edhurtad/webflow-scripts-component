@@ -1,4 +1,4 @@
-import { SoatController } from '../../features/soat/soat.controller.js';
+import { SoatController } from '../../features/soat/controllers/soat.controller.js';
 
 const init = () => {
   const soatController = new SoatController();
