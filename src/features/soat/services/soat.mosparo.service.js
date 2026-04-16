@@ -1,4 +1,4 @@
-import { APP_CONFIG } from '../../shared/config/app.config.js';
+import { APP_CONFIG } from '../../../shared/config/app.config.js';
 
 const waitForMosparo = (maxAttempts = 40, delay = 250) => {
   return new Promise((resolve, reject) => {
