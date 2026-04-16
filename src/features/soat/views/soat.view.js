@@ -105,20 +105,19 @@ export class SoatView {
   if (!data) return;
 
   const soatTotal = Number(data.TotalValue || 0);
-  const apAvailable = Boolean(data.ApAvailable);
-  const apValue = apAvailable ? Number(data.Value_AP || 0) : 0;
+  const apValue = Number(data.Value_AP || 0);
 
-  const apiFinalTotal = Number(data.TotalSummedValue || 0);
-  const calculatedFinalTotal = soatTotal + apValue;
+  const hasAp =
+    data.SOAT_AP === 'True' ||
+    data.SOAT_AP === true ||
+    apValue > 0 ||
+    data.ApAvailable === true;
 
-  const finalTotal =
-    apiFinalTotal > soatTotal
-      ? apiFinalTotal
-      : calculatedFinalTotal;
-
-  const apText = apAvailable
+  const apText = hasAp
     ? formatCurrency(apValue)
     : 'No disponible';
+
+  const finalTotal = soatTotal + (hasAp ? apValue : 0);
 
   this.dom.result.vehicleType.textContent = data.VehicleTypeName || '-';
   this.dom.result.soatTotal.textContent = formatCurrency(soatTotal);
