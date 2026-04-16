@@ -1,4 +1,4 @@
-import { SoatView } from '../soat.view.js';
+import { SoatView } from '../views/soat.view.js';
 import { validateSoatForm } from '../validators/soat.validation.js';
 import { requestSoatQuote } from '../services/soat.service.js';
 import {
