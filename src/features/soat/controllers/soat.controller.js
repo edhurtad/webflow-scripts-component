@@ -78,7 +78,7 @@ export class SoatController {
     try {
       const result = await requestSoatQuote(payload);
 
-      this.view.renderResult(result.data);
+      this.view.renderResult(result.data, formData.withAP);
       this.view.showMessage(
         result.message || 'Cotización exitosa.',
         'success'

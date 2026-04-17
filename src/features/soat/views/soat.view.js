@@ -101,7 +101,7 @@ export class SoatView {
     };
   }
 
- renderResult(data) {
+ renderResult(data, isApSelected = false) {
   if (!data) return;
 
   const soatTotal = Number(data.TotalValue || 0);
@@ -111,19 +111,23 @@ export class SoatView {
   );
 
   const isApAvailable = Boolean(apProduct?.Available);
-  const isApIncluded = Boolean(apProduct?.Include);
-
   const apValue = isApAvailable
     ? Number(apProduct?.Quote?.TotalValue || 0)
     : 0;
 
-  // 👇 Mostrar texto
-  const apText = isApAvailable
-    ? formatCurrency(apValue)
-    : 'No disponible';
+  const shouldIncludeAp = isApAvailable && isApSelected;
 
-  // 👇 Sumar solo si el usuario lo activó
-  const finalTotal = soatTotal + (isApIncluded ? apValue : 0);
+  let apText = 'No disponible';
+
+  if (isApAvailable && shouldIncludeAp) {
+    apText = formatCurrency(apValue);
+  }
+
+  if (isApAvailable && !shouldIncludeAp) {
+    apText = 'No incluido';
+  }
+
+  const finalTotal = soatTotal + (shouldIncludeAp ? apValue : 0);
 
   this.dom.result.vehicleType.textContent = data.VehicleTypeName || '-';
   this.dom.result.soatTotal.textContent = formatCurrency(soatTotal);
