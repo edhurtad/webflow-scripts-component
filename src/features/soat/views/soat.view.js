@@ -101,23 +101,29 @@ export class SoatView {
     };
   }
 
-  renderResult(data) {
+ renderResult(data) {
   if (!data) return;
 
   const soatTotal = Number(data.TotalValue || 0);
-  const apValue = Number(data.Value_AP || 0);
 
-  const hasAp =
-    data.SOAT_AP === 'True' ||
-    data.SOAT_AP === true ||
-    apValue > 0 ||
-    data.ApAvailable === true;
+  const apProduct = data.Subproducts?.find(
+    (product) => product.Type === 'AP'
+  );
 
-  const apText = hasAp
+  const isApAvailable = Boolean(apProduct?.Available);
+  const isApIncluded = Boolean(apProduct?.Include);
+
+  const apValue = isApAvailable
+    ? Number(apProduct?.Quote?.TotalValue || 0)
+    : 0;
+
+  // 👇 Mostrar texto
+  const apText = isApAvailable
     ? formatCurrency(apValue)
     : 'No disponible';
 
-  const finalTotal = soatTotal + (hasAp ? apValue : 0);
+  // 👇 Sumar solo si el usuario lo activó
+  const finalTotal = soatTotal + (isApIncluded ? apValue : 0);
 
   this.dom.result.vehicleType.textContent = data.VehicleTypeName || '-';
   this.dom.result.soatTotal.textContent = formatCurrency(soatTotal);
