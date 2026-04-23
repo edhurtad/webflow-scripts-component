@@ -20,6 +20,10 @@ const getDOMElements = () => {
       soatTotal: document.querySelector('#soat-total'),
       apValue: document.querySelector('#ap-value'),
       finalTotal: document.querySelector('#final-total')
+    },
+    homologation: {
+      container: document.querySelector('#soat-homologation'),
+      options: document.querySelector('#soat-homologation-options')
     }
   };
 };
@@ -101,43 +105,45 @@ export class SoatView {
     };
   }
 
- renderResult(data, isApSelected = false) {
-  if (!data) return;
+  renderResult(data, isApSelected = false) {
+    if (!data) return;
 
-  const soatTotal = Number(data.TotalValue || 0);
+    const soatTotal = Number(data.TotalValue || 0);
 
-  const apProduct = data.Subproducts?.find(
-    (product) => product.Type === 'AP'
-  );
+    const apProduct = data.Subproducts?.find(
+      (product) => product.Type === 'AP'
+    );
 
-  const isApAvailable = Boolean(apProduct?.Available);
-  const apValue = isApAvailable
-    ? Number(apProduct?.Quote?.TotalValue || 0)
-    : 0;
+    const isApAvailable = Boolean(apProduct?.Available);
+    const apValue = isApAvailable
+      ? Number(apProduct?.Quote?.TotalValue || 0)
+      : 0;
 
-  const shouldIncludeAp = isApAvailable && isApSelected;
+    const shouldIncludeAp = isApAvailable && isApSelected;
 
-  let apText = 'No disponible';
+    let apText = 'No disponible';
 
-  if (isApAvailable && shouldIncludeAp) {
-    apText = formatCurrency(apValue);
+    if (isApAvailable && shouldIncludeAp) {
+      apText = formatCurrency(apValue);
+    }
+
+    if (isApAvailable && !shouldIncludeAp) {
+      apText = 'No incluido';
+    }
+
+    const finalTotal = soatTotal + (shouldIncludeAp ? apValue : 0);
+
+    this.dom.result.vehicleType.textContent = data.VehicleTypeName || '-';
+    this.dom.result.soatTotal.textContent = formatCurrency(soatTotal);
+    this.dom.result.apValue.textContent = apText;
+    this.dom.result.finalTotal.textContent = formatCurrency(finalTotal);
+
+    this.dom.result.container.style.display = 'block';
   }
-
-  if (isApAvailable && !shouldIncludeAp) {
-    apText = 'No incluido';
-  }
-
-  const finalTotal = soatTotal + (shouldIncludeAp ? apValue : 0);
-
-  this.dom.result.vehicleType.textContent = data.VehicleTypeName || '-';
-  this.dom.result.soatTotal.textContent = formatCurrency(soatTotal);
-  this.dom.result.apValue.textContent = apText;
-  this.dom.result.finalTotal.textContent = formatCurrency(finalTotal);
-
-  this.dom.result.container.style.display = 'block';
-}
 
   resetResult() {
+    this.hideHomologationOptions();
+
     this.dom.result.vehicleType.textContent = '-';
     this.dom.result.soatTotal.textContent = '$ 0';
     this.dom.result.apValue.textContent = '-';
@@ -183,5 +189,44 @@ export class SoatView {
 
   onSubmit(callback) {
     this.dom.form?.addEventListener('submit', callback);
+  }
+
+  hideHomologationOptions() {
+    if (this.dom.homologation?.container) {
+      this.dom.homologation.container.style.display = 'none';
+    }
+
+    if (this.dom.homologation?.options) {
+      this.dom.homologation.options.innerHTML = '';
+    }
+  }
+
+  renderHomologationOptions(options = [], onSelect) {
+    if (!this.dom.homologation?.container || !this.dom.homologation?.options) {
+      return;
+    }
+
+    this.dom.homologation.options.innerHTML = '';
+
+    options.forEach((option) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'soat-homologation__option';
+
+      button.innerHTML = `
+        <span class="soat-homologation__option-title">${option.vehicleTypeName}</span>
+        <span class="soat-homologation__option-price">
+          Valor estimado: ${formatCurrency(Number(option.totalValue || 0))}
+        </span>
+      `;
+
+      button.addEventListener('click', () => {
+        onSelect(option);
+      });
+
+      this.dom.homologation.options.appendChild(button);
+    });
+
+    this.dom.homologation.container.style.display = 'block';
   }
 }

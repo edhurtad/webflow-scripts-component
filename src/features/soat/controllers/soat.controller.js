@@ -33,6 +33,42 @@ export class SoatController {
     });
   }
 
+  async handleHomologationSelection(quotePublicId, vehicleTypeId, withAP) {
+    this.view.showMessage('');
+    this.view.setLoading(true);
+
+    try {
+      const payload = {
+        action: 'select-homologation',
+        quotePublicId,
+        vehicleTypeId,
+        withAP
+      };
+
+      const result = await requestSoatQuote(payload);
+
+      if (!result.success) {
+        throw new Error(
+          result.message || 'No fue posible actualizar la homologación.'
+        );
+      }
+
+      this.view.hideHomologationOptions();
+      this.view.renderResult(result.data, withAP);
+      this.view.showMessage(
+        result.message || 'Cotización exitosa.',
+        'success'
+      );
+    } catch (error) {
+      this.view.showMessage(
+        error.message || 'No fue posible actualizar la homologación.',
+        'error'
+      );
+    } finally {
+      this.view.setLoading(false);
+    }
+  }
+
   async handleSubmit(event) {
     event.preventDefault();
 
@@ -45,8 +81,11 @@ export class SoatController {
 
     if (!validationResult.isValid) {
       this.showValidationErrors(validationResult.errors);
+
+      const firstErrorMessage = Object.values(validationResult.errors)[0];
+
       this.view.showMessage(
-        'Por favor, completa correctamente los campos.',
+        firstErrorMessage || 'Por favor, completa correctamente los campos.',
         'error'
       );
       return;
@@ -65,8 +104,10 @@ export class SoatController {
     const rawFormData = Object.fromEntries(new FormData(this.view.dom.form).entries());
 
     const payload = {
+      action: 'quote',
       formData: {
         ...rawFormData,
+        withAP: formData.withAP,
         privacyPolicy: formData.privacyAccepted,
         _mosparo_submitToken: submitToken,
         _mosparo_validationToken: validationToken
@@ -77,6 +118,26 @@ export class SoatController {
 
     try {
       const result = await requestSoatQuote(payload);
+
+      if (result.requiresHomologationSelection) {
+        this.view.showMessage(
+          result.message || 'Selecciona una opción para continuar.',
+          'success'
+        );
+
+        this.view.renderHomologationOptions(
+          result.data?.homologateOptions || [],
+          (selectedOption) => {
+            this.handleHomologationSelection(
+              result.quotePublicId,
+              selectedOption.vehicleTypeId,
+              formData.withAP
+            );
+          }
+        );
+
+        return;
+      }
 
       this.view.renderResult(result.data, formData.withAP);
       this.view.showMessage(
