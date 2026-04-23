@@ -133,21 +133,25 @@ export class SoatView {
 
     const finalTotal = soatTotal + (shouldIncludeAp ? apValue : 0);
 
+    this.hideHomologationOptions();
+    this.showPrimaryAction();
+
     this.dom.result.vehicleType.textContent = data.VehicleTypeName || '-';
     this.dom.result.soatTotal.textContent = formatCurrency(soatTotal);
     this.dom.result.apValue.textContent = apText;
     this.dom.result.finalTotal.textContent = formatCurrency(finalTotal);
-
     this.dom.result.container.style.display = 'block';
   }
 
   resetResult() {
     this.hideHomologationOptions();
+    this.showPrimaryAction();
 
     this.dom.result.vehicleType.textContent = '-';
     this.dom.result.soatTotal.textContent = '$ 0';
     this.dom.result.apValue.textContent = '-';
     this.dom.result.finalTotal.textContent = '$ 0';
+    this.dom.result.container.style.display = 'block';
   }
 
   initFloatingLabels() {
@@ -191,6 +195,30 @@ export class SoatView {
     this.dom.form?.addEventListener('submit', callback);
   }
 
+  hidePrimaryAction() {
+    if (this.dom.button) {
+      this.dom.button.style.display = 'none';
+    }
+  }
+
+  showPrimaryAction() {
+    if (this.dom.button) {
+      this.dom.button.style.display = 'block';
+    }
+  }
+
+  hideResult() {
+    if (this.dom.result?.container) {
+      this.dom.result.container.style.display = 'none';
+    }
+  }
+
+  showResult() {
+    if (this.dom.result?.container) {
+      this.dom.result.container.style.display = 'block';
+    }
+  }
+
   hideHomologationOptions() {
     if (this.dom.homologation?.container) {
       this.dom.homologation.container.style.display = 'none';
@@ -205,6 +233,9 @@ export class SoatView {
     if (!this.dom.homologation?.container || !this.dom.homologation?.options) {
       return;
     }
+
+    this.hidePrimaryAction();
+    this.hideResult();
 
     this.dom.homologation.options.innerHTML = '';
 

@@ -119,25 +119,22 @@ export class SoatController {
     try {
       const result = await requestSoatQuote(payload);
 
-      if (result.requiresHomologationSelection) {
-        this.view.showMessage(
-          result.message || 'Selecciona una opción para continuar.',
-          'success'
-        );
+     if (result.requiresHomologationSelection) {
+  this.view.showMessage('');
 
-        this.view.renderHomologationOptions(
-          result.data?.homologateOptions || [],
-          (selectedOption) => {
-            this.handleHomologationSelection(
-              result.quotePublicId,
-              selectedOption.vehicleTypeId,
-              formData.withAP
-            );
-          }
-        );
+  this.view.renderHomologationOptions(
+    result.data?.homologateOptions || [],
+    (selectedOption) => {
+      this.handleHomologationSelection(
+        result.quotePublicId,
+        selectedOption.vehicleTypeId,
+        formData.withAP
+      );
+    }
+  );
 
-        return;
-      }
+  return;
+}
 
       this.view.renderResult(result.data, formData.withAP);
       this.view.showMessage(
