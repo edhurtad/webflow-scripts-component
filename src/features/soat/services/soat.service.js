@@ -12,9 +12,15 @@ export const requestSoatQuote = async (payload) => {
 
   const result = await response.json();
 
-  if (!response.ok || result?.success === false) {
-    throw new Error(result?.message || 'No fue posible realizar la cotización.');
-  }
+if (!response.ok || result?.success === false) {
+  const error = new Error(
+    result?.message || 'No fue posible realizar la cotización.'
+  );
+
+  error.data = result;
+
+  throw error;
+}
 
   return result;
 };

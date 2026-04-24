@@ -75,6 +75,7 @@ export class SoatController {
     this.view.showMessage('');
     this.view.clearFieldErrors();
     this.view.resetResult();
+    this.view.showExtraMessage('');
 
     const formData = this.view.getFormData();
     const validationResult = validateSoatForm(formData);
@@ -143,9 +144,15 @@ export class SoatController {
       );
     } catch (error) {
       this.view.showMessage(
-        error.message || 'No fue posible realizar la cotización.',
-        'error'
-      );
+  error.message || 'No fue posible realizar la cotización.',
+  'error'
+);
+
+if (error.data?.endDate) {
+  this.view.showExtraMessage(
+    `Tu fecha de vencimiento es ${this.view.formatLongDate(error.data.endDate)}.`
+  );
+}
 
       this.mosparoInstance?.reset?.();
     } finally {

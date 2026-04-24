@@ -5,6 +5,7 @@ const getDOMElements = () => {
     form: document.querySelector('#soat-form'),
     button: document.querySelector('#quote-btn'),
     message: document.querySelector('#sim-message'),
+    extraMessage: document.querySelector('#sim-extra-message'),
     fields: [...document.querySelectorAll('.soat-box-field')],
     privacy: document.querySelector('.soat-privacy'),
     inputs: {
@@ -228,6 +229,37 @@ export class SoatView {
       this.dom.homologation.options.innerHTML = '';
     }
   }
+
+  showExtraMessage(text = '') {
+  const { extraMessage } = this.dom;
+
+  if (!extraMessage) return;
+
+  extraMessage.textContent = text;
+
+  if (!text) {
+    extraMessage.classList.add('soat-extra-message--hidden');
+    return;
+  }
+
+  extraMessage.classList.remove('soat-extra-message--hidden');
+}
+
+formatLongDate(dateValue = '') {
+  if (!dateValue || dateValue.length !== 8) return dateValue;
+
+  const year = Number(dateValue.slice(0, 4));
+  const month = Number(dateValue.slice(4, 6)) - 1;
+  const day = Number(dateValue.slice(6, 8));
+
+  const date = new Date(year, month, day);
+
+  return new Intl.DateTimeFormat('es-CO', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(date);
+}
 
   renderHomologationOptions(options = [], onSelect) {
     if (!this.dom.homologation?.container || !this.dom.homologation?.options) {
