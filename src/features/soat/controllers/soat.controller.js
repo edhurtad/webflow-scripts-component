@@ -33,42 +33,42 @@ export class SoatController {
     });
   }
 
-  async handleHomologationSelection(quotePublicId, vehicleTypeId, withAP) {
-    this.view.showMessage('');
-    this.view.showHomologationLoading();
-    this.view.setLoading(true);
+ async handleHomologationSelection(quotePublicId, vehicleTypeId, withAP) {
+  this.view.showHomologationLoading();
 
-    try {
-      const payload = {
-        action: 'select-homologation',
-        quotePublicId,
-        vehicleTypeId,
-        withAP
-      };
+  try {
+    const payload = {
+      action: 'select-homologation',
+      quotePublicId,
+      vehicleTypeId,
+      withAP
+    };
 
-      const result = await requestSoatQuote(payload);
+    const result = await requestSoatQuote(payload);
 
-      if (!result.success) {
-        throw new Error(
-          result.message || 'No fue posible actualizar la homologación.'
-        );
-      }
-
-      this.view.hideHomologationOptions();
-      this.view.renderResult(result.data, withAP);
-      this.view.showMessage(
-        result.message || 'Cotización exitosa.',
-        'success'
+    if (!result.success) {
+      throw new Error(
+        result.message || 'No fue posible actualizar la homologación.'
       );
-    } catch (error) {
-      this.view.showMessage(
-        error.message || 'No fue posible actualizar la homologación.',
-        'error'
-      );
-    } finally {
-      this.view.setLoading(false);
     }
+
+    this.view.hideHomologationOptions();
+    this.view.renderResult(result.data, withAP);
+    this.view.showMessage(
+      result.message || 'Cotización exitosa.',
+      'success'
+    );
+  } catch (error) {
+    this.view.hideHomologationOptions();
+    this.view.showPrimaryAction();
+    this.view.showResult();
+
+    this.view.showMessage(
+      error.message || 'No fue posible actualizar la homologación.',
+      'error'
+    );
   }
+}
 
   async handleSubmit(event) {
     event.preventDefault();
