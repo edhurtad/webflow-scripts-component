@@ -261,6 +261,24 @@ formatLongDate(dateValue = '') {
   }).format(date);
 }
 
+showHomologationLoading() {
+  if (!this.dom.homologation?.container || !this.dom.homologation?.options) {
+    return;
+  }
+
+  this.hidePrimaryAction();
+  this.hideResult();
+
+  this.dom.homologation.options.innerHTML = `
+    <div class="soat-homologation__loading">
+      <span class="soat-spinner"></span>
+      <span>Actualizando cotización...</span>
+    </div>
+  `;
+
+  this.dom.homologation.container.style.display = 'block';
+}
+
   renderHomologationOptions(options = [], onSelect) {
     if (!this.dom.homologation?.container || !this.dom.homologation?.options) {
       return;

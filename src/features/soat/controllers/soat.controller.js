@@ -35,6 +35,7 @@ export class SoatController {
 
   async handleHomologationSelection(quotePublicId, vehicleTypeId, withAP) {
     this.view.showMessage('');
+    this.view.showHomologationLoading();
     this.view.setLoading(true);
 
     try {
