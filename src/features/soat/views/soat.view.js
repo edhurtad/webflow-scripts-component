@@ -122,7 +122,7 @@ export class SoatView {
 
     const shouldIncludeAp = isApAvailable && isApSelected;
 
-    let apText = 'No disponible';
+    let apText = 'No Aplica';
 
     if (isApAvailable && shouldIncludeAp) {
       apText = formatCurrency(apValue);
