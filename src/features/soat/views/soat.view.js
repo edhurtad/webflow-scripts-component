@@ -1,3 +1,4 @@
+import { SOAT_MESSAGES } from '../constants/soat.messages.js';
 import { formatCurrency } from '../../../shared/utils/formatters/currency.formatter.js';
 
 const getDOMElements = () => {
@@ -34,10 +35,22 @@ export class SoatView {
     this.dom = getDOMElements();
   }
 
+  /**
+   * Valida si existe el formulario SOAT en la página.
+   *
+   * @returns {boolean}
+   */
   hasForm() {
     return Boolean(this.dom.form);
   }
 
+  /**
+   * Muestra un mensaje de estado al usuario.
+   *
+   * @param {string} text
+   * @param {'success'|'error'} type
+   * @returns {void}
+   */
   showMessage(text = '', type = 'success') {
     const { message } = this.dom;
 
@@ -57,12 +70,16 @@ export class SoatView {
     }
 
     message.classList.add(
-      type === 'error'
-        ? 'soat-alert--error'
-        : 'soat-alert--success'
+      type === 'error' ? 'soat-alert--error' : 'soat-alert--success'
     );
   }
 
+  /**
+   * Cambia el estado visual del botón principal.
+   *
+   * @param {boolean} isLoading
+   * @returns {void}
+   */
   setLoading(isLoading) {
     const { button } = this.dom;
 
@@ -70,10 +87,16 @@ export class SoatView {
 
     button.disabled = isLoading;
     button.textContent = isLoading
-      ? 'Cotizando...'
-      : 'Calcular mi SOAT';
+      ? SOAT_MESSAGES.QUOTE_LOADING
+      : SOAT_MESSAGES.QUOTE_BUTTON;
   }
 
+  /**
+   * Marca visualmente un campo con error.
+   *
+   * @param {string} fieldName
+   * @returns {void}
+   */
   markFieldError(fieldName) {
     if (fieldName === 'privacyAccepted') {
       this.dom.privacy?.classList.add('is-error');
@@ -88,6 +111,11 @@ export class SoatView {
     }
   }
 
+  /**
+   * Limpia errores visuales del formulario.
+   *
+   * @returns {void}
+   */
   clearFieldErrors() {
     this.dom.fields.forEach((field) => {
       field.classList.remove('is-error');
@@ -96,6 +124,11 @@ export class SoatView {
     this.dom.privacy?.classList.remove('is-error');
   }
 
+  /**
+   * Obtiene los datos actuales del formulario.
+   *
+   * @returns {{ phone: string, plate: string, identification: string, withAP: boolean, privacyAccepted: boolean }}
+   */
   getFormData() {
     return {
       phone: this.dom.inputs.phone?.value?.trim() || '',
@@ -106,6 +139,13 @@ export class SoatView {
     };
   }
 
+  /**
+   * Renderiza el resultado final de la cotización.
+   *
+   * @param {Record<string, any>} data
+   * @param {boolean} isApSelected
+   * @returns {void}
+   */
   renderResult(data, isApSelected = false) {
     if (!data) return;
 
@@ -122,14 +162,14 @@ export class SoatView {
 
     const shouldIncludeAp = isApAvailable && isApSelected;
 
-    let apText = 'No Aplica';
+    let apText = SOAT_MESSAGES.AP_NOT_APPLICABLE;
 
     if (isApAvailable && shouldIncludeAp) {
       apText = formatCurrency(apValue);
     }
 
     if (isApAvailable && !shouldIncludeAp) {
-      apText = 'No incluido';
+      apText = SOAT_MESSAGES.AP_NOT_INCLUDED;
     }
 
     const finalTotal = soatTotal + (shouldIncludeAp ? apValue : 0);
@@ -141,9 +181,14 @@ export class SoatView {
     this.dom.result.soatTotal.textContent = formatCurrency(soatTotal);
     this.dom.result.apValue.textContent = apText;
     this.dom.result.finalTotal.textContent = formatCurrency(finalTotal);
-    this.dom.result.container.style.display = 'block';
+    this.showResult();
   }
 
+  /**
+   * Reinicia los valores del resultado.
+   *
+   * @returns {void}
+   */
   resetResult() {
     this.hideHomologationOptions();
     this.showPrimaryAction();
@@ -152,9 +197,14 @@ export class SoatView {
     this.dom.result.soatTotal.textContent = '$ 0';
     this.dom.result.apValue.textContent = '-';
     this.dom.result.finalTotal.textContent = '$ 0';
-    this.dom.result.container.style.display = 'block';
+    this.showResult();
   }
 
+  /**
+   * Inicializa los labels flotantes.
+   *
+   * @returns {void}
+   */
   initFloatingLabels() {
     this.dom.fields.forEach((field) => {
       const input = field.querySelector('input');
@@ -166,13 +216,17 @@ export class SoatView {
 
       input.addEventListener('input', toggleFilledState);
       input.addEventListener('blur', toggleFilledState);
-
       field.addEventListener('click', () => input.focus());
 
       toggleFilledState();
     });
   }
 
+  /**
+   * Inicializa el formateo de inputs.
+   *
+   * @returns {void}
+   */
   initInputFormatting() {
     const { phone, plate, identification } = this.dom.inputs;
 
@@ -192,34 +246,65 @@ export class SoatView {
     });
   }
 
+  /**
+   * Registra el evento submit del formulario.
+   *
+   * @param {(event: SubmitEvent) => void} callback
+   * @returns {void}
+   */
   onSubmit(callback) {
     this.dom.form?.addEventListener('submit', callback);
   }
 
+  /**
+   * Oculta el botón principal.
+   *
+   * @returns {void}
+   */
   hidePrimaryAction() {
     if (this.dom.button) {
       this.dom.button.style.display = 'none';
     }
   }
 
+  /**
+   * Muestra el botón principal.
+   *
+   * @returns {void}
+   */
   showPrimaryAction() {
     if (this.dom.button) {
       this.dom.button.style.display = 'block';
     }
   }
 
+  /**
+   * Oculta el bloque de resultado.
+   *
+   * @returns {void}
+   */
   hideResult() {
     if (this.dom.result?.container) {
       this.dom.result.container.style.display = 'none';
     }
   }
 
+  /**
+   * Muestra el bloque de resultado.
+   *
+   * @returns {void}
+   */
   showResult() {
     if (this.dom.result?.container) {
       this.dom.result.container.style.display = 'block';
     }
   }
 
+  /**
+   * Oculta las opciones de homologación.
+   *
+   * @returns {void}
+   */
   hideHomologationOptions() {
     if (this.dom.homologation?.container) {
       this.dom.homologation.container.style.display = 'none';
@@ -230,55 +315,57 @@ export class SoatView {
     }
   }
 
+  /**
+   * Muestra un mensaje complementario.
+   *
+   * @param {string} text
+   * @returns {void}
+   */
   showExtraMessage(text = '') {
-  const { extraMessage } = this.dom;
+    const { extraMessage } = this.dom;
 
-  if (!extraMessage) return;
+    if (!extraMessage) return;
 
-  extraMessage.textContent = text;
+    extraMessage.textContent = text;
 
-  if (!text) {
-    extraMessage.classList.add('soat-extra-message--hidden');
-    return;
+    if (!text) {
+      extraMessage.classList.add('soat-extra-message--hidden');
+      return;
+    }
+
+    extraMessage.classList.remove('soat-extra-message--hidden');
   }
 
-  extraMessage.classList.remove('soat-extra-message--hidden');
-}
+  /**
+   * Muestra el loading de actualización de homologación.
+   *
+   * @returns {void}
+   */
+  showHomologationLoading() {
+    if (!this.dom.homologation?.container || !this.dom.homologation?.options) {
+      return;
+    }
 
-formatLongDate(dateValue = '') {
-  if (!dateValue || dateValue.length !== 8) return dateValue;
+    this.hidePrimaryAction();
+    this.hideResult();
 
-  const year = Number(dateValue.slice(0, 4));
-  const month = Number(dateValue.slice(4, 6)) - 1;
-  const day = Number(dateValue.slice(6, 8));
+    this.dom.homologation.options.innerHTML = `
+      <div class="soat-homologation__loading">
+        <span class="soat-spinner"></span>
+        <span>${SOAT_MESSAGES.UPDATING_QUOTE}</span>
+      </div>
+    `;
 
-  const date = new Date(year, month, day);
-
-  return new Intl.DateTimeFormat('es-CO', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  }).format(date);
-}
-
-showHomologationLoading() {
-  if (!this.dom.homologation?.container || !this.dom.homologation?.options) {
-    return;
+    this.dom.homologation.container.style.display = 'block';
   }
 
-  this.hidePrimaryAction();
-  this.hideResult();
-
-  this.dom.homologation.options.innerHTML = `
-    <div class="soat-homologation__loading">
-      <span class="soat-spinner"></span>
-      <span>Actualizando cotización...</span>
-    </div>
-  `;
-
-  this.dom.homologation.container.style.display = 'block';
-}
-
+  /**
+   * Renderiza las opciones de homologación.
+   *
+   * @param {Array<{ vehicleTypeId: string, vehicleTypeName: string, totalValue: string }>} options
+   * @param {(option: { vehicleTypeId: string, vehicleTypeName: string, totalValue: string }) => void} onSelect
+   * @returns {void}
+   */
   renderHomologationOptions(options = [], onSelect) {
     if (!this.dom.homologation?.container || !this.dom.homologation?.options) {
       return;
@@ -297,7 +384,7 @@ showHomologationLoading() {
       button.innerHTML = `
         <span class="soat-homologation__option-title">${option.vehicleTypeName}</span>
         <span class="soat-homologation__option-price">
-          Valor estimado: ${formatCurrency(Number(option.totalValue || 0))}
+          ${SOAT_MESSAGES.ESTIMATED_VALUE}: ${formatCurrency(Number(option.totalValue || 0))}
         </span>
       `;
 

@@ -7,5 +7,11 @@ export const SOAT_MESSAGES = {
   QUOTE_ERROR: 'No fue posible realizar la cotización.',
   HOMOLOGATION_UPDATE_ERROR: 'No fue posible actualizar la homologación.',
   HOMOLOGATION_SELECT: 'Selecciona una opción para continuar.',
-  NETWORK_ERROR: 'No pudimos conectar con el servicio en este momento. Inténtalo nuevamente en unos minutos.'
+  NETWORK_ERROR: 'No pudimos conectar con el servicio en este momento. Inténtalo nuevamente en unos minutos.',
+  QUOTE_LOADING: 'Cotizando...',
+  QUOTE_BUTTON: 'Calcular mi SOAT',
+  AP_NOT_APPLICABLE: 'No Aplica',
+  AP_NOT_INCLUDED: 'No incluido',
+  UPDATING_QUOTE: 'Actualizando cotización...',
+  ESTIMATED_VALUE: 'Valor estimado'
 };

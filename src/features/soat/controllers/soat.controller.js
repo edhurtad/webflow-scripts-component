@@ -2,6 +2,7 @@ import { SoatView } from '../views/soat.view.js';
 import { validateSoatForm } from '../validators/soat.validation.js';
 import { requestSoatQuote } from '../services/soat.service.js';
 import { SOAT_MESSAGES } from '../constants/soat.messages.js';
+import { formatLongDate } from '../../../shared/utils/formatters/date.formatter.js';
 import { buildSoatQuotePayload } from '../view-models/soat-form.view-model.js';
 import {
   createMosparoInstance,
@@ -178,7 +179,7 @@ export class SoatController {
 
       if (error.data?.endDate) {
         this.view.showExtraMessage(
-          `${SOAT_MESSAGES.EXPIRATION_DATE} ${this.view.formatLongDate(error.data.endDate)}.`
+         `${SOAT_MESSAGES.EXPIRATION_DATE} ${formatLongDate(error.data.endDate)}.`
         );
       }
 
