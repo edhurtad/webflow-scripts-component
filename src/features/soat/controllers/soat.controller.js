@@ -2,6 +2,7 @@ import { SoatView } from '../views/soat.view.js';
 import { validateSoatForm } from '../validators/soat.validation.js';
 import { requestSoatQuote } from '../services/soat.service.js';
 import { SOAT_MESSAGES } from '../constants/soat.messages.js';
+import { buildSoatQuotePayload } from '../view-models/soat-form.view-model.js';
 import {
   createMosparoInstance,
   getMosparoTokens
@@ -13,11 +14,21 @@ export class SoatController {
     this.mosparoInstance = null;
   }
 
+  /**
+   * Valida si existe el formulario SOAT en la página.
+   *
+   * @returns {boolean}
+   */
   hasForm() {
     return this.view.hasForm();
   }
 
-  async initMosparo() {
+  /**
+   * Inicializa Mosparo.
+   *
+   * @returns {Promise<void>}
+   */
+  async #initMosparo() {
     try {
       this.mosparoInstance = await createMosparoInstance();
     } catch (error) {
@@ -25,13 +36,27 @@ export class SoatController {
     }
   }
 
-  showValidationErrors(errors) {
+  /**
+   * Marca en la vista los campos con errores de validación.
+   *
+   * @param {Record<string, string>} errors
+   * @returns {void}
+   */
+  #showValidationErrors(errors) {
     Object.keys(errors).forEach((fieldName) => {
       this.view.markFieldError(fieldName);
     });
   }
 
-  async handleHomologationSelection(quotePublicId, vehicleTypeId, withAP) {
+  /**
+   * Envía la homologación seleccionada y renderiza la cotización final.
+   *
+   * @param {string} quotePublicId
+   * @param {string} vehicleTypeId
+   * @param {boolean} withAP
+   * @returns {Promise<void>}
+   */
+  async #handleHomologationSelection(quotePublicId, vehicleTypeId, withAP) {
     this.view.showHomologationLoading();
 
     try {
@@ -68,6 +93,12 @@ export class SoatController {
     }
   }
 
+  /**
+   * Maneja el envío del formulario de cotización SOAT.
+   *
+   * @param {SubmitEvent} event
+   * @returns {Promise<void>}
+   */
   async handleSubmit(event) {
     event.preventDefault();
 
@@ -80,7 +111,7 @@ export class SoatController {
     const validationResult = validateSoatForm(formData);
 
     if (!validationResult.isValid) {
-      this.showValidationErrors(validationResult.errors);
+      this.#showValidationErrors(validationResult.errors);
 
       const firstErrorMessage = Object.values(validationResult.errors)[0];
 
@@ -92,27 +123,19 @@ export class SoatController {
       return;
     }
 
-    const { submitToken, validationToken } = getMosparoTokens(this.view.dom.form);
+    const { submitToken, validationToken } = getMosparoTokens(
+      this.view.dom.form
+    );
 
     if (!submitToken || !validationToken) {
       this.view.showMessage(SOAT_MESSAGES.SECURITY_REQUIRED, 'error');
       return;
     }
 
-    const rawFormData = Object.fromEntries(
-      new FormData(this.view.dom.form).entries()
-    );
-
-    const payload = {
-      action: 'quote',
-      formData: {
-        ...rawFormData,
-        withAP: formData.withAP,
-        privacyPolicy: formData.privacyAccepted,
-        _mosparo_submitToken: submitToken,
-        _mosparo_validationToken: validationToken
-      }
-    };
+   const payload = buildSoatQuotePayload(this.view.dom.form, formData, {
+     submitToken,
+     validationToken
+});
 
     this.view.setLoading(true);
 
@@ -125,7 +148,7 @@ export class SoatController {
         this.view.renderHomologationOptions(
           result.data?.homologateOptions || [],
           (selectedOption) => {
-            this.handleHomologationSelection(
+            this.#handleHomologationSelection(
               result.quotePublicId,
               selectedOption.vehicleTypeId,
               formData.withAP
@@ -165,10 +188,15 @@ export class SoatController {
     }
   }
 
+  /**
+   * Inicializa los listeners y comportamientos del simulador SOAT.
+   *
+   * @returns {void}
+   */
   init() {
     if (!this.hasForm()) return;
 
-    this.initMosparo();
+    this.#initMosparo();
     this.view.initInputFormatting();
     this.view.initFloatingLabels();
     this.view.onSubmit(this.handleSubmit.bind(this));

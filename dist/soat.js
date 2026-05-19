@@ -5,5 +5,4 @@ const init = () => {
   soatController.init();
 };
 
-
 document.addEventListener('DOMContentLoaded', init);
