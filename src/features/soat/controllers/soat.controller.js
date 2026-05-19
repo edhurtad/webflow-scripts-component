@@ -1,6 +1,7 @@
 import { SoatView } from '../views/soat.view.js';
 import { validateSoatForm } from '../validators/soat.validation.js';
 import { requestSoatQuote } from '../services/soat.service.js';
+import { SOAT_MESSAGES } from '../constants/soat.messages.js';
 import {
   createMosparoInstance,
   getMosparoTokens
@@ -20,10 +21,7 @@ export class SoatController {
     try {
       this.mosparoInstance = await createMosparoInstance();
     } catch (error) {
-      this.view.showMessage(
-        'No fue posible cargar la validación de seguridad.',
-        'error'
-      );
+      this.view.showMessage(SOAT_MESSAGES.MOSPARO_LOAD_ERROR, 'error');
     }
   }
 
@@ -33,42 +31,42 @@ export class SoatController {
     });
   }
 
- async handleHomologationSelection(quotePublicId, vehicleTypeId, withAP) {
-  this.view.showHomologationLoading();
+  async handleHomologationSelection(quotePublicId, vehicleTypeId, withAP) {
+    this.view.showHomologationLoading();
 
-  try {
-    const payload = {
-      action: 'select-homologation',
-      quotePublicId,
-      vehicleTypeId,
-      withAP
-    };
+    try {
+      const payload = {
+        action: 'select-homologation',
+        quotePublicId,
+        vehicleTypeId,
+        withAP
+      };
 
-    const result = await requestSoatQuote(payload);
+      const result = await requestSoatQuote(payload);
 
-    if (!result.success) {
-      throw new Error(
-        result.message || 'No fue posible actualizar la homologación.'
+      if (!result.success) {
+        throw new Error(
+          result.message || SOAT_MESSAGES.HOMOLOGATION_UPDATE_ERROR
+        );
+      }
+
+      this.view.hideHomologationOptions();
+      this.view.renderResult(result.data, withAP);
+      this.view.showMessage(
+        result.message || SOAT_MESSAGES.QUOTE_SUCCESS,
+        'success'
+      );
+    } catch (error) {
+      this.view.hideHomologationOptions();
+      this.view.showPrimaryAction();
+      this.view.showResult();
+
+      this.view.showMessage(
+        error.message || SOAT_MESSAGES.HOMOLOGATION_UPDATE_ERROR,
+        'error'
       );
     }
-
-    this.view.hideHomologationOptions();
-    this.view.renderResult(result.data, withAP);
-    this.view.showMessage(
-      result.message || 'Cotización exitosa.',
-      'success'
-    );
-  } catch (error) {
-    this.view.hideHomologationOptions();
-    this.view.showPrimaryAction();
-    this.view.showResult();
-
-    this.view.showMessage(
-      error.message || 'No fue posible actualizar la homologación.',
-      'error'
-    );
   }
-}
 
   async handleSubmit(event) {
     event.preventDefault();
@@ -87,23 +85,23 @@ export class SoatController {
       const firstErrorMessage = Object.values(validationResult.errors)[0];
 
       this.view.showMessage(
-        firstErrorMessage || 'Por favor, completa correctamente los campos.',
+        firstErrorMessage || SOAT_MESSAGES.FORM_INVALID,
         'error'
       );
+
       return;
     }
 
     const { submitToken, validationToken } = getMosparoTokens(this.view.dom.form);
 
     if (!submitToken || !validationToken) {
-      this.view.showMessage(
-        'Completa la validación de seguridad.',
-        'error'
-      );
+      this.view.showMessage(SOAT_MESSAGES.SECURITY_REQUIRED, 'error');
       return;
     }
 
-    const rawFormData = Object.fromEntries(new FormData(this.view.dom.form).entries());
+    const rawFormData = Object.fromEntries(
+      new FormData(this.view.dom.form).entries()
+    );
 
     const payload = {
       action: 'quote',
@@ -121,39 +119,45 @@ export class SoatController {
     try {
       const result = await requestSoatQuote(payload);
 
-     if (result.requiresHomologationSelection) {
-  this.view.showMessage('');
+      if (result.requiresHomologationSelection) {
+        this.view.showMessage('');
 
-  this.view.renderHomologationOptions(
-    result.data?.homologateOptions || [],
-    (selectedOption) => {
-      this.handleHomologationSelection(
-        result.quotePublicId,
-        selectedOption.vehicleTypeId,
-        formData.withAP
-      );
-    }
-  );
+        this.view.renderHomologationOptions(
+          result.data?.homologateOptions || [],
+          (selectedOption) => {
+            this.handleHomologationSelection(
+              result.quotePublicId,
+              selectedOption.vehicleTypeId,
+              formData.withAP
+            );
+          }
+        );
 
-  return;
-}
+        return;
+      }
 
       this.view.renderResult(result.data, formData.withAP);
       this.view.showMessage(
-        result.message || 'Cotización exitosa.',
+        result.message || SOAT_MESSAGES.QUOTE_SUCCESS,
         'success'
       );
     } catch (error) {
-      this.view.showMessage(
-  error.message || 'No fue posible realizar la cotización.',
-  'error'
-);
+      const isNetworkError =
+        error.message === 'Load failed' ||
+        error.message === 'Failed to fetch';
 
-if (error.data?.endDate) {
-  this.view.showExtraMessage(
-    `Tu fecha de vencimiento es ${this.view.formatLongDate(error.data.endDate)}.`
-  );
-}
+      this.view.showMessage(
+        isNetworkError
+          ? SOAT_MESSAGES.NETWORK_ERROR
+          : error.message || SOAT_MESSAGES.QUOTE_ERROR,
+        'error'
+      );
+
+      if (error.data?.endDate) {
+        this.view.showExtraMessage(
+          `${SOAT_MESSAGES.EXPIRATION_DATE} ${this.view.formatLongDate(error.data.endDate)}.`
+        );
+      }
 
       this.mosparoInstance?.reset?.();
     } finally {
