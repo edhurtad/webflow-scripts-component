@@ -1,8 +1,8 @@
 export const APP_CONFIG = {
-  webhookUrl: 'https://delfosn8n-webhook.nequi.io/webhook/soat-simulador',
+  webhookUrl: window.SOAT_CONFIG?.webhookUrl || '',
   mosparo: {
-    host: 'https://captcha-pdn.bancadigital.com.co',
-    uuid: '6ed07a5e-e5a5-481e-8b3e-10207103e394',
-    publicKey: 'v3O55RYyfEgMHZMFeUccTN5JoAvoZfOfTURLXcFswlI'
+    host: window.SOAT_CONFIG?.mosparoHost || '',
+    uuid: window.SOAT_CONFIG?.mosparoUuid || '',
+    publicKey: window.SOAT_CONFIG?.mosparoPublicKey || ''
   }
 };
