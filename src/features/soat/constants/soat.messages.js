@@ -13,5 +13,7 @@ export const SOAT_MESSAGES = {
   AP_NOT_APPLICABLE: 'No Aplica',
   AP_NOT_INCLUDED: 'No incluido',
   UPDATING_QUOTE: 'Actualizando cotización...',
-  ESTIMATED_VALUE: 'Valor estimado'
+  ESTIMATED_VALUE: 'Valor estimado',
+  MOSPARO_TIMEOUT_ERROR: 'Mosparo no cargó a tiempo.',
+  MOSPARO_LABEL: 'Confirmo que soy una persona'
 };

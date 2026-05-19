@@ -1,4 +1,7 @@
 import { APP_CONFIG } from '../../../shared/config/app.config.js';
+import { SOAT_MESSAGES } from '../constants/soat.messages.js';
+
+const MOSPARO_CONTAINER_ID = 'mosparo-box';
 
 const waitForMosparo = (maxAttempts = 40, delay = 250) => {
   return new Promise((resolve, reject) => {
@@ -13,7 +16,7 @@ const waitForMosparo = (maxAttempts = 40, delay = 250) => {
       }
 
       if (attempts >= maxAttempts) {
-        reject(new Error('Mosparo no cargó a tiempo.'));
+        reject(new Error(SOAT_MESSAGES.MOSPARO_TIMEOUT_ERROR));
         return;
       }
 
@@ -28,26 +31,26 @@ export const createMosparoInstance = async () => {
   const Mosparo = await waitForMosparo();
 
   return new Mosparo(
-  'mosparo-box',
-  APP_CONFIG.mosparo.host,
-  APP_CONFIG.mosparo.uuid,
-  APP_CONFIG.mosparo.publicKey,
-  {
-    designMode: false,
-    language: 'es_419',
-    customMessages: {
-      es_419: {
-        label: 'Confirmo que soy una persona'
-      },
-      es_CO: {
-        label: 'Confirmo que soy una persona'
-      },
-      es_ES: {
-        label: 'Confirmo que soy una persona'
+    MOSPARO_CONTAINER_ID,
+    APP_CONFIG.mosparo.host,
+    APP_CONFIG.mosparo.uuid,
+    APP_CONFIG.mosparo.publicKey,
+    {
+      designMode: false,
+      language: 'es_419',
+      customMessages: {
+        es_419: {
+          label: SOAT_MESSAGES.MOSPARO_LABEL
+        },
+        es_CO: {
+          label: SOAT_MESSAGES.MOSPARO_LABEL
+        },
+        es_ES: {
+          label: SOAT_MESSAGES.MOSPARO_LABEL
+        }
       }
     }
-  }
-)
+  );
 };
 
 export const getMosparoTokens = (formElement) => {
