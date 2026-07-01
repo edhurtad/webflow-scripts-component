@@ -241,9 +241,9 @@ export class SoatView {
         .slice(0, 6);
     });
 
-    identification?.addEventListener('input', (event) => {
-      event.target.value = event.target.value.replace(/\D/g, '');
-    });
+   identification?.addEventListener('input', (event) => {
+  event.target.value = event.target.value.replace(/\D/g, '').slice(0, 10);
+});
   }
 
   /**

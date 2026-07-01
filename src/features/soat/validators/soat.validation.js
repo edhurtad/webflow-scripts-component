@@ -1,5 +1,7 @@
+import { SOAT_MESSAGES } from '../constants/soat.messages.js';
+
 const isValidPhone = (phone) => {
-  return /^\d{10}$/.test(phone);
+  return /^3\d{9}$/.test(phone);
 };
 
 const isValidPlate = (plate) => {
@@ -7,30 +9,36 @@ const isValidPlate = (plate) => {
 };
 
 const isValidIdentification = (identification) => {
-  return Boolean(identification && identification.trim().length > 0);
+  return /^\d{6,10}$/.test(identification);
 };
 
 const isPrivacyAccepted = (privacyAccepted) => {
   return privacyAccepted === true;
 };
 
+/**
+ * Valida los datos del formulario SOAT.
+ *
+ * @param {{ phone: string, plate: string, identification: string, privacyAccepted: boolean }} formData
+ * @returns {{ isValid: boolean, errors: Record<string, string> }}
+ */
 export const validateSoatForm = (formData) => {
   const errors = {};
 
   if (!isValidPhone(formData.phone)) {
-    errors.phone = 'El celular debe tener 10 dígitos';
+    errors.phone = SOAT_MESSAGES.INVALID_PHONE;
   }
 
   if (!isValidPlate(formData.plate)) {
-    errors.plate = 'La placa no es válida';
+    errors.plate = SOAT_MESSAGES.INVALID_PLATE;
   }
 
   if (!isValidIdentification(formData.identification)) {
-    errors.identification = 'La cédula es obligatoria';
+    errors.identification = SOAT_MESSAGES.INVALID_IDENTIFICATION;
   }
 
   if (!isPrivacyAccepted(formData.privacyAccepted)) {
-    errors.privacyAccepted = 'Debes autorizar el tratamiento de datos';
+    errors.privacyAccepted = SOAT_MESSAGES.PRIVACY_REQUIRED;
   }
 
   return {

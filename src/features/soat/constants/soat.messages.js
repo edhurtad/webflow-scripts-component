@@ -15,5 +15,9 @@ export const SOAT_MESSAGES = {
   UPDATING_QUOTE: 'Actualizando cotización...',
   ESTIMATED_VALUE: 'Valor estimado',
   MOSPARO_TIMEOUT_ERROR: 'Mosparo no cargó a tiempo.',
-  MOSPARO_LABEL: 'Confirmo que soy una persona'
+  MOSPARO_LABEL: 'Confirmo que soy una persona',
+  INVALID_PHONE: 'Ingresa un celular válido de 10 dígitos que inicie por 3.',
+  INVALID_PLATE: 'La placa no es válida.',
+  INVALID_IDENTIFICATION: 'Ingresa un documento válido entre 6 y 10 dígitos.',
+  PRIVACY_REQUIRED: 'Debes autorizar el tratamiento de datos.'
 };
