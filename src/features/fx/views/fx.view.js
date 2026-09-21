@@ -142,16 +142,10 @@ export class FxView {
         '[data-fx="header-rate"]'
       );
 
-    this.headerRateMeta =
-      wrapper.querySelector(
-        '[data-fx="header-rate-meta"]'
-      );
-
     this.selectionSummary =
       wrapper.querySelector(
         '[data-fx="selection-summary"]'
       );
-
   }
 
   /**
@@ -235,16 +229,14 @@ export class FxView {
           ).dataset.fxAction;
 
         if (
-          actionName ===
-          'swap'
+          actionName === 'swap'
         ) {
           handlers.onSwap();
           return;
         }
 
         if (
-          actionName ===
-          'convert'
+          actionName === 'convert'
         ) {
           handlers.onConvert();
         }
@@ -266,8 +258,7 @@ export class FxView {
    */
   getConsent() {
     return (
-      this.consent?.checked ===
-      true
+      this.consent?.checked === true
     );
   }
 
@@ -432,8 +423,7 @@ export class FxView {
     const amountText =
       data.amount > 0
         ? `${
-            data.currencyFrom ===
-            'USD'
+            data.currencyFrom === 'USD'
               ? 'US$'
               : '$'
           } ${
@@ -508,23 +498,13 @@ export class FxView {
         } COP`;
     }
 
-    if (this.headerRateMeta) {
-      this.headerRateMeta.textContent =
-        data.operationLabel;
-    }
-
     if (this.conversionHelper) {
       this.conversionHelper.textContent =
         'Tasa consultada al momento de realizar la conversión.';
     }
   }
 
-  /**
-   * @param {string} operationLabel
-   */
-  clearConversionResult(
-    operationLabel
-  ) {
+  clearConversionResult() {
     if (this.previewResult) {
       this.previewResult.textContent =
         '—';
@@ -538,11 +518,6 @@ export class FxView {
     if (this.headerRate) {
       this.headerRate.textContent =
         'Consulte una conversión';
-    }
-
-    if (this.headerRateMeta) {
-      this.headerRateMeta.textContent =
-        operationLabel;
     }
 
     if (this.conversionHelper) {
@@ -672,7 +647,6 @@ export class FxView {
   focusAmount() {
     this.amountInput?.focus();
   }
-
 
   /**
    * @param {string} name

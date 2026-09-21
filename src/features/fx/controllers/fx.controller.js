@@ -458,9 +458,7 @@ export class FxController {
     this.viewModel
       .clearConversionResult();
 
-    this.view.clearConversionResult(
-      this.getOperationLabel()
-    );
+    this.view.clearConversionResult();
   }
 
   /**
