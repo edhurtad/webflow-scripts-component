@@ -140,8 +140,7 @@ export class FinancialConsumerView {
 
     this.departmentSelect.appendChild(
       createOption({
-        label:
-          FINANCIAL_CONSUMER_PLACEHOLDERS.department,
+        label: FINANCIAL_CONSUMER_PLACEHOLDERS.department,
         disabled: true,
         selected: true,
       })
@@ -205,11 +204,17 @@ export class FinancialConsumerView {
   }
 
   toggleOtherProduct(show) {
-    if (!this.otherProductField) return;
+    if (
+      !this.otherProductField ||
+      !this.otherProductInput
+    ) {
+      return;
+    }
 
     this.otherProductField.hidden = !show;
-
-    if (!this.otherProductInput) return;
+    this.otherProductField.style.display = show
+      ? ""
+      : "none";
 
     this.otherProductInput.disabled = !show;
     this.otherProductInput.required = show;
@@ -220,11 +225,17 @@ export class FinancialConsumerView {
   }
 
   toggleOtherService(show) {
-    if (!this.otherServiceField) return;
+    if (
+      !this.otherServiceField ||
+      !this.otherServiceInput
+    ) {
+      return;
+    }
 
     this.otherServiceField.hidden = !show;
-
-    if (!this.otherServiceInput) return;
+    this.otherServiceField.style.display = show
+      ? ""
+      : "none";
 
     this.otherServiceInput.disabled = !show;
     this.otherServiceInput.required = show;
