@@ -27,12 +27,12 @@ export const FINANCIAL_CONSUMER_NAMES = Object.freeze({
   submissionDate: "submissionDate",
   idType: "idType",
 
-  claimedProduct: "claimedProduct",
+  claimedProduct: "producto_reclamado",
   otherProduct: "otherProduct",
 
   claimedChannel: "claimedChannel",
 
-  claimedService: "claimedService",
+  claimedService: "servicio_fallas",
   otherService: "otherService",
 
   caseDescription: "caseDescription",
