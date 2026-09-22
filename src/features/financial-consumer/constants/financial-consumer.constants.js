@@ -24,21 +24,21 @@ export const FINANCIAL_CONSUMER_IDS = Object.freeze({
 });
 
 export const FINANCIAL_CONSUMER_NAMES = Object.freeze({
-  submissionDate: "submissionDate",
-  idType: "idType",
+  submissionDate: "fecha_digilenciamiento",
+  idType: "tipo_documento",
 
   claimedProduct: "producto_reclamado",
   otherProduct: "otherProduct",
 
-  claimedChannel: "claimedChannel",
+  claimedChannel: "canal_reclamo",
 
   claimedService: "servicio_fallas",
   otherService: "otherService",
 
-  caseDescription: "caseDescription",
-  specificRequest: "specificRequest",
+  caseDescription: "descripcion_hechos",
+  specificRequest: "solicitud_puntual",
 
-  amount: "amount",
+  amount: "cuantia_reclamacion",
 });
 
 export const FINANCIAL_CONSUMER_VALUES = Object.freeze({
