@@ -28,7 +28,8 @@ export const formatSubmissionDate = (value = "") => {
 
 export const normalizeAmount = (value = "") => {
   const normalizedValue = String(value)
-    .replace(/[^\d]/g, "");
+    .replace(/[^\d]/g, "")
+    .replace(/^0+(?=\d)/, "");
 
   return normalizedValue || "0";
 };
