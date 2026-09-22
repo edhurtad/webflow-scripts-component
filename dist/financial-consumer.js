@@ -7,7 +7,6 @@ const init = () => {
   financialConsumerController.init();
 };
 
-
 document.addEventListener(
   'DOMContentLoaded',
   init

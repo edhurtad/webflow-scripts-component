@@ -1,3 +1,14 @@
+/**
+ * @typedef {Object} FinancialConsumerMessages
+ * @property {string} invalidEmail
+ * @property {string} invalidPhone
+ * @property {string} invalidDocument
+ * @property {string} fileTooLarge
+ * @property {string} departmentsError
+ * @property {string} citiesError
+ */
+
+/** @type {Readonly<FinancialConsumerMessages>} */
 export const FINANCIAL_CONSUMER_MESSAGES = Object.freeze({
   invalidEmail: "Ingrese un correo válido.",
   invalidPhone: "El número debe tener 10 dígitos.",

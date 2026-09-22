@@ -35,24 +35,30 @@ import {
 
 export class FinancialConsumerController {
   constructor() {
+    /** @type {FinancialConsumerView} */
     this.view = new FinancialConsumerView();
 
+    /** @type {HTMLInputElement | null} */
     this.submissionDateHiddenInput = null;
+
+    /** @type {HTMLInputElement | null} */
     this.amountHiddenInput = null;
   }
 
+  /**
+   * Inicializa el comportamiento del formulario.
+   *
+   * @returns {Promise<void>}
+   */
   async init() {
     this.setupSubmissionDate();
     this.setupAmount();
-
     this.setupDocumentNumber();
     this.setupEmail();
     this.setupPhoneNumber();
-
     this.setupTextCounters();
     this.setupConditionalFields();
     this.setupFileInputs();
-
     this.setupLocationListeners();
 
     await this.loadDepartments();
@@ -60,6 +66,12 @@ export class FinancialConsumerController {
     this.view.renderCities();
   }
 
+  /**
+   * Configura la fecha actual y prepara el valor
+   * que se enviará al formulario.
+   *
+   * @returns {void}
+   */
   setupSubmissionDate() {
     const input = this.view.submissionDateInput;
 
@@ -82,8 +94,19 @@ export class FinancialConsumerController {
     });
   }
 
+  /**
+   * Sincroniza la fecha visible con el valor
+   * DD/MM/AAAA enviado al formulario.
+   *
+   * @returns {void}
+   */
   syncSubmissionDate() {
-    if (!this.submissionDateHiddenInput) return;
+    if (
+      !this.submissionDateHiddenInput ||
+      !this.view.submissionDateInput
+    ) {
+      return;
+    }
 
     this.submissionDateHiddenInput.value =
       formatSubmissionDate(
@@ -91,6 +114,12 @@ export class FinancialConsumerController {
       );
   }
 
+  /**
+   * Configura el formato visual y valor normalizado
+   * del monto de reclamación.
+   *
+   * @returns {void}
+   */
   setupAmount() {
     const input = this.view.amountInput;
 
@@ -123,6 +152,12 @@ export class FinancialConsumerController {
     updateAmount();
   }
 
+  /**
+   * Configura validación y sanitización
+   * del número de documento.
+   *
+   * @returns {void}
+   */
   setupDocumentNumber() {
     const input =
       this.view.documentNumberInput;
@@ -153,6 +188,11 @@ export class FinancialConsumerController {
     });
   }
 
+  /**
+   * Configura la validación del correo electrónico.
+   *
+   * @returns {void}
+   */
   setupEmail() {
     const input = this.view.emailInput;
 
@@ -172,6 +212,12 @@ export class FinancialConsumerController {
     });
   }
 
+  /**
+   * Configura la validación y sanitización
+   * del número celular.
+   *
+   * @returns {void}
+   */
   setupPhoneNumber() {
     const input =
       this.view.phoneNumberInput;
@@ -202,6 +248,12 @@ export class FinancialConsumerController {
     });
   }
 
+  /**
+   * Configura los contadores de caracteres
+   * para los campos de texto extensos.
+   *
+   * @returns {void}
+   */
   setupTextCounters() {
     this.view.setupCounter({
       textarea:
@@ -226,6 +278,12 @@ export class FinancialConsumerController {
     });
   }
 
+  /**
+   * Configura los campos condicionales
+   * de otro producto y otro servicio.
+   *
+   * @returns {void}
+   */
   setupConditionalFields() {
     const syncProductField = () => {
       const shouldShow =
@@ -269,6 +327,10 @@ export class FinancialConsumerController {
     syncServiceField();
   }
 
+  /**
+
+   * @returns {void}
+   */
   setupFileInputs() {
     this.view.fileInputs.forEach(
       (input) => {
@@ -303,15 +365,26 @@ export class FinancialConsumerController {
     );
   }
 
+  /**
+   * Configura el listener de cambio
+   * del departamento.
+   *
+   * @returns {void}
+   */
   setupLocationListeners() {
     this.view.departmentSelect?.addEventListener(
       "change",
       () => {
-        this.handleDepartmentChange();
+        void this.handleDepartmentChange();
       }
     );
   }
 
+  /**
+   * Obtiene y renderiza los departamentos.
+   *
+   * @returns {Promise<void>}
+   */
   async loadDepartments() {
     try {
       const departments =
@@ -329,6 +402,12 @@ export class FinancialConsumerController {
     }
   }
 
+  /**
+   * Obtiene y renderiza las ciudades
+   * correspondientes al departamento seleccionado.
+   *
+   * @returns {Promise<void>}
+   */
   async handleDepartmentChange() {
     const departmentKey =
       this.view.getSelectedDepartmentKey();

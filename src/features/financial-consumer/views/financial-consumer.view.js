@@ -4,10 +4,57 @@ import {
   FINANCIAL_CONSUMER_PLACEHOLDERS,
 } from "../constants/financial-consumer.constants.js";
 
+/**
+ * @typedef {Object} Department
+ * @property {string} id
+ * @property {string} key
+ * @property {string} label
+ */
+
+/**
+ * @typedef {Object} City
+ * @property {string} id
+ * @property {string} label
+ */
+
+/**
+ * @typedef {Object} SelectOptionConfig
+ * @property {string} [value]
+ * @property {string} label
+ * @property {boolean} [disabled]
+ * @property {boolean} [selected]
+ * @property {string|null} [departmentKey]
+ */
+
+/**
+ * @typedef {Object} HiddenFieldConfig
+ * @property {HTMLInputElement} sourceInput
+ * @property {string} name
+ */
+
+/**
+ * @typedef {Object} CounterConfig
+ * @property {HTMLTextAreaElement|null} textarea
+ * @property {string} counterId
+ * @property {number} maxCharacters
+ */
+
+/**
+ * Obtiene un elemento del DOM por ID.
+ *
+ * @param {string} id
+ * @returns {HTMLElement|null}
+ */
 const getElementById = (id) => {
   return document.getElementById(id);
 };
 
+/**
+ * Crea una opción para un select.
+ *
+ * @param {SelectOptionConfig} config
+ * @returns {HTMLOptionElement}
+ */
 const createOption = ({
   value = "",
   label,
@@ -31,80 +78,140 @@ const createOption = ({
 
 export class FinancialConsumerView {
   constructor() {
-    this.documentNumberInput = getElementById(
-      FINANCIAL_CONSUMER_IDS.documentNumber
-    );
+    /** @type {HTMLInputElement|null} */
+    this.documentNumberInput =
+      /** @type {HTMLInputElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.documentNumber
+        )
+      );
 
-    this.emailInput = getElementById(
-      FINANCIAL_CONSUMER_IDS.email
-    );
+    /** @type {HTMLInputElement|null} */
+    this.emailInput =
+      /** @type {HTMLInputElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.email
+        )
+      );
 
-    this.phoneNumberInput = getElementById(
-      FINANCIAL_CONSUMER_IDS.phoneNumber
-    );
+    /** @type {HTMLInputElement|null} */
+    this.phoneNumberInput =
+      /** @type {HTMLInputElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.phoneNumber
+        )
+      );
 
-    this.departmentSelect = getElementById(
-      FINANCIAL_CONSUMER_IDS.department
-    );
+    /** @type {HTMLSelectElement|null} */
+    this.departmentSelect =
+      /** @type {HTMLSelectElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.department
+        )
+      );
 
-    this.citySelect = getElementById(
-      FINANCIAL_CONSUMER_IDS.city
-    );
+    /** @type {HTMLSelectElement|null} */
+    this.citySelect =
+      /** @type {HTMLSelectElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.city
+        )
+      );
 
-    this.submissionDateInput = getElementById(
-      FINANCIAL_CONSUMER_IDS.submissionDate
-    );
+    /** @type {HTMLInputElement|null} */
+    this.submissionDateInput =
+      /** @type {HTMLInputElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.submissionDate
+        )
+      );
 
-    this.otherProductInput = getElementById(
-      FINANCIAL_CONSUMER_IDS.otherProduct
-    );
+    /** @type {HTMLTextAreaElement|null} */
+    this.otherProductInput =
+      /** @type {HTMLTextAreaElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.otherProduct
+        )
+      );
 
-    this.otherProductField = getElementById(
-      FINANCIAL_CONSUMER_IDS.otherProductField
-    );
+    /** @type {HTMLElement|null} */
+    this.otherProductField =
+      getElementById(
+        FINANCIAL_CONSUMER_IDS.otherProductField
+      );
 
-    this.otherServiceInput = getElementById(
-      FINANCIAL_CONSUMER_IDS.otherService
-    );
+    /** @type {HTMLTextAreaElement|null} */
+    this.otherServiceInput =
+      /** @type {HTMLTextAreaElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.otherService
+        )
+      );
 
-    this.otherServiceField = getElementById(
-      FINANCIAL_CONSUMER_IDS.otherServiceField
-    );
+    /** @type {HTMLElement|null} */
+    this.otherServiceField =
+      getElementById(
+        FINANCIAL_CONSUMER_IDS.otherServiceField
+      );
 
-    this.caseDescriptionInput = getElementById(
-      FINANCIAL_CONSUMER_IDS.caseDescription
-    );
+    /** @type {HTMLTextAreaElement|null} */
+    this.caseDescriptionInput =
+      /** @type {HTMLTextAreaElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.caseDescription
+        )
+      );
 
-    this.specificRequestInput = getElementById(
-      FINANCIAL_CONSUMER_IDS.specificRequest
-    );
+    /** @type {HTMLTextAreaElement|null} */
+    this.specificRequestInput =
+      /** @type {HTMLTextAreaElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.specificRequest
+        )
+      );
 
-    this.amountInput = getElementById(
-      FINANCIAL_CONSUMER_IDS.amount
-    );
+    /** @type {HTMLInputElement|null} */
+    this.amountInput =
+      /** @type {HTMLInputElement|null} */ (
+        getElementById(
+          FINANCIAL_CONSUMER_IDS.amount
+        )
+      );
 
+    /** @type {HTMLInputElement[]} */
     this.productRadios = Array.from(
       document.querySelectorAll(
         `input[name="${FINANCIAL_CONSUMER_NAMES.claimedProduct}"]`
       )
     );
 
+    /** @type {HTMLInputElement[]} */
     this.serviceRadios = Array.from(
       document.querySelectorAll(
         `input[name="${FINANCIAL_CONSUMER_NAMES.claimedService}"]`
       )
     );
 
+    /** @type {HTMLInputElement[]} */
     this.fileInputs = Array.from(
-      document.querySelectorAll('input[type="file"]')
+      document.querySelectorAll(
+        'input[type="file"]'
+      )
     );
 
+    /** @type {HTMLFormElement|null} */
     this.form =
       this.submissionDateInput?.closest("form") ??
       this.documentNumberInput?.closest("form") ??
       null;
   }
 
+  /**
+   * Asigna la fecha visible del formulario.
+   *
+   * @param {string} value
+   * @returns {void}
+   */
   setSubmissionDate(value) {
     if (!this.submissionDateInput) return;
 
@@ -112,6 +219,12 @@ export class FinancialConsumerView {
     this.submissionDateInput.readOnly = true;
   }
 
+  /**
+   * Crea un input hidden asociado a un campo visible.
+   *
+   * @param {HiddenFieldConfig} config
+   * @returns {HTMLInputElement|null}
+   */
   createHiddenField({
     sourceInput,
     name,
@@ -120,19 +233,29 @@ export class FinancialConsumerView {
       return null;
     }
 
-    const hiddenInput = document.createElement("input");
+    const hiddenInput =
+      document.createElement("input");
 
     hiddenInput.type = "hidden";
     hiddenInput.name = name;
-    hiddenInput.dataset.source = sourceInput.id;
+    hiddenInput.dataset.source =
+      sourceInput.id;
 
     sourceInput.removeAttribute("name");
 
-    this.form.appendChild(hiddenInput);
+    this.form.appendChild(
+      hiddenInput
+    );
 
     return hiddenInput;
   }
 
+  /**
+   * Renderiza las opciones de departamentos.
+   *
+   * @param {Department[]} departments
+   * @returns {void}
+   */
   renderDepartments(departments) {
     if (!this.departmentSelect) return;
 
@@ -140,7 +263,8 @@ export class FinancialConsumerView {
 
     this.departmentSelect.appendChild(
       createOption({
-        label: FINANCIAL_CONSUMER_PLACEHOLDERS.department,
+        label:
+          FINANCIAL_CONSUMER_PLACEHOLDERS.department,
         disabled: true,
         selected: true,
       })
@@ -151,12 +275,19 @@ export class FinancialConsumerView {
         createOption({
           value: department.id,
           label: department.label,
-          departmentKey: department.key,
+          departmentKey:
+            department.key,
         })
       );
     });
   }
 
+  /**
+   * Renderiza las ciudades disponibles.
+   *
+   * @param {City[]} [cities=[]]
+   * @returns {void}
+   */
   renderCities(cities = []) {
     if (!this.citySelect) return;
 
@@ -164,7 +295,8 @@ export class FinancialConsumerView {
 
     this.citySelect.appendChild(
       createOption({
-        label: FINANCIAL_CONSUMER_PLACEHOLDERS.city,
+        label:
+          FINANCIAL_CONSUMER_PLACEHOLDERS.city,
         disabled: true,
         selected: true,
       })
@@ -180,13 +312,27 @@ export class FinancialConsumerView {
     });
   }
 
+  /**
+   * Obtiene la key del departamento seleccionado.
+   *
+   * @returns {string}
+   */
   getSelectedDepartmentKey() {
     const selectedOption =
-      this.departmentSelect?.selectedOptions?.[0];
+      this.departmentSelect
+        ?.selectedOptions?.[0];
 
-    return selectedOption?.dataset?.key ?? "";
+    return (
+      selectedOption?.dataset?.key ??
+      ""
+    );
   }
 
+  /**
+   * Obtiene el producto seleccionado.
+   *
+   * @returns {string}
+   */
   getSelectedProduct() {
     return (
       this.productRadios.find(
@@ -195,6 +341,11 @@ export class FinancialConsumerView {
     );
   }
 
+  /**
+   * Obtiene el servicio seleccionado.
+   *
+   * @returns {string}
+   */
   getSelectedService() {
     return (
       this.serviceRadios.find(
@@ -203,6 +354,12 @@ export class FinancialConsumerView {
     );
   }
 
+  /**
+   * Muestra u oculta el campo de otro producto.
+   *
+   * @param {boolean} show
+   * @returns {void}
+   */
   toggleOtherProduct(show) {
     if (
       !this.otherProductField ||
@@ -211,19 +368,30 @@ export class FinancialConsumerView {
       return;
     }
 
-    this.otherProductField.hidden = !show;
-    this.otherProductField.style.display = show
-      ? ""
-      : "none";
+    this.otherProductField.hidden =
+      !show;
 
-    this.otherProductInput.disabled = !show;
-    this.otherProductInput.required = show;
+    this.otherProductField.style.display =
+      show ? "" : "none";
+
+    this.otherProductInput.disabled =
+      !show;
+
+    this.otherProductInput.required =
+      show;
 
     if (!show) {
-      this.otherProductInput.value = "";
+      this.otherProductInput.value =
+        "";
     }
   }
 
+  /**
+   * Muestra u oculta el campo de otro servicio.
+   *
+   * @param {boolean} show
+   * @returns {void}
+   */
   toggleOtherService(show) {
     if (
       !this.otherServiceField ||
@@ -232,19 +400,30 @@ export class FinancialConsumerView {
       return;
     }
 
-    this.otherServiceField.hidden = !show;
-    this.otherServiceField.style.display = show
-      ? ""
-      : "none";
+    this.otherServiceField.hidden =
+      !show;
 
-    this.otherServiceInput.disabled = !show;
-    this.otherServiceInput.required = show;
+    this.otherServiceField.style.display =
+      show ? "" : "none";
+
+    this.otherServiceInput.disabled =
+      !show;
+
+    this.otherServiceInput.required =
+      show;
 
     if (!show) {
-      this.otherServiceInput.value = "";
+      this.otherServiceInput.value =
+        "";
     }
   }
 
+  /**
+   * Configura un contador de caracteres.
+   *
+   * @param {CounterConfig} config
+   * @returns {void}
+   */
   setupCounter({
     textarea,
     counterId,
@@ -252,12 +431,17 @@ export class FinancialConsumerView {
   }) {
     if (!textarea) return;
 
-    textarea.maxLength = maxCharacters;
+    textarea.maxLength =
+      maxCharacters;
 
-    let counter = getElementById(counterId);
+    /** @type {HTMLElement|null} */
+    let counter =
+      getElementById(counterId);
 
     if (!counter) {
-      counter = document.createElement("div");
+      counter =
+        document.createElement("div");
+
       counter.id = counterId;
 
       textarea.insertAdjacentElement(
@@ -279,12 +463,28 @@ export class FinancialConsumerView {
     updateCounter();
   }
 
-  setValidity(input, message = "") {
+  /**
+   * Define un mensaje de validación nativo.
+   *
+   * @param {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|null} input
+   * @param {string} [message=""]
+   * @returns {void}
+   */
+  setValidity(
+    input,
+    message = ""
+  ) {
     if (!input) return;
 
     input.setCustomValidity(message);
   }
 
+  /**
+   * Muestra el mensaje de validación nativo.
+   *
+   * @param {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|null} input
+   * @returns {void}
+   */
   showValidity(input) {
     input?.reportValidity();
   }

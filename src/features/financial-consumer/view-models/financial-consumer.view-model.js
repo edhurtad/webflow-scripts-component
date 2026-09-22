@@ -1,3 +1,6 @@
+/**
+ * @returns {string}
+ */
 export const getTodayIsoDate = () => {
   const today = new Date();
 
@@ -14,6 +17,10 @@ export const getTodayIsoDate = () => {
   return `${year}-${month}-${day}`;
 };
 
+/**
+ * @param {string} value
+ * @returns {string}
+ */
 export const formatSubmissionDate = (value = "") => {
   if (!value) return "";
 
@@ -26,6 +33,11 @@ export const formatSubmissionDate = (value = "") => {
   return `${day}/${month}/${year}`;
 };
 
+/**
+ *
+ * @param {string | number} value
+ * @returns {string}
+ */
 export const normalizeAmount = (value = "") => {
   const normalizedValue = String(value)
     .replace(/[^\d]/g, "")
@@ -34,6 +46,10 @@ export const normalizeAmount = (value = "") => {
   return normalizedValue || "0";
 };
 
+/**
+ * @param {string | number} value
+ * @returns {string}
+ */
 export const formatAmount = (value = "") => {
   const normalizedValue = normalizeAmount(value);
 
