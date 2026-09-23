@@ -14,6 +14,12 @@ import {
   FX_INTEREST_LABELS
 } from '../constants/fx.messages.js';
 
+import {
+  formatFxAmountInput,
+  parseFxAmount,
+  sanitizeFxAmount
+} from '../formatters/fx-amount.formatter.js';
+
 /**
  * @typedef {'COP' | 'USD'} FxCurrency
  */
@@ -293,24 +299,18 @@ export class FxView {
     }
 
     const cleanValue =
-      currency === 'COP'
-        ? this.sanitizeCopAmount(
-            this.amountInput.value
-          )
-        : this.sanitizeUsdAmount(
-            this.amountInput.value
-          );
+      sanitizeFxAmount(
+        this.amountInput.value,
+        currency
+      );
 
     this.amountInput.value =
-      currency === 'COP'
-        ? this.formatCopInput(
-            cleanValue
-          )
-        : this.formatUsdInput(
-            cleanValue
-          );
+      formatFxAmountInput(
+        cleanValue,
+        currency
+      );
 
-    return this.parseAmount(
+    return parseFxAmount(
       this.amountInput.value,
       currency
     );
@@ -340,7 +340,7 @@ export class FxView {
    * @returns {number}
    */
   getAmount(currency) {
-    return this.parseAmount(
+    return parseFxAmount(
       this.amountInput?.value || '',
       currency
     );
@@ -664,162 +664,5 @@ export class FxView {
         `[data-fx-error="${name}"]`
       )
     );
-  }
-
-  /**
-   * @param {string} value
-   * @returns {string}
-   */
-  sanitizeCopAmount(value) {
-    return onlyNumbers(value);
-  }
-
-  /**
-   * @param {string} value
-   * @returns {string}
-   */
-  sanitizeUsdAmount(value) {
-    const raw =
-      String(value || '')
-        .replace(
-          /[^\d.,]/g,
-          ''
-        )
-        .replace(
-          /\./g,
-          ''
-        );
-
-    const commaIndex =
-      raw.indexOf(',');
-
-    if (commaIndex === -1) {
-      return onlyNumbers(raw);
-    }
-
-    const integerPart =
-      onlyNumbers(
-        raw.slice(
-          0,
-          commaIndex
-        )
-      );
-
-    const decimalPart =
-      onlyNumbers(
-        raw.slice(
-          commaIndex + 1
-        )
-      ).slice(0, 2);
-
-    return `${integerPart},${decimalPart}`;
-  }
-
-  /**
-   * @param {string} value
-   * @param {FxCurrency} currency
-   * @returns {number}
-   */
-  parseAmount(
-    value,
-    currency
-  ) {
-    if (!value) {
-      return 0;
-    }
-
-    if (currency === 'COP') {
-      const number =
-        Number(
-          onlyNumbers(value)
-        );
-
-      return Number.isFinite(number)
-        ? number
-        : 0;
-    }
-
-    const normalized =
-      String(value)
-        .replace(
-          /\./g,
-          ''
-        )
-        .replace(
-          ',',
-          '.'
-        )
-        .replace(
-          /[^\d.]/g,
-          ''
-        );
-
-    const number =
-      Number(normalized);
-
-    return Number.isFinite(number)
-      ? number
-      : 0;
-  }
-
-  /**
-   * @param {string} value
-   * @returns {string}
-   */
-  formatCopInput(value) {
-    const digits =
-      onlyNumbers(value);
-
-    if (!digits) {
-      return '';
-    }
-
-    return formatNumber(
-      Number(digits)
-    );
-  }
-
-  /**
-   * @param {string} value
-   * @returns {string}
-   */
-  formatUsdInput(value) {
-    if (!value) {
-      return '';
-    }
-
-    const normalized =
-      String(value);
-
-    const hasComma =
-      normalized.includes(',');
-
-    const [
-      integerPart,
-      decimalPart = ''
-    ] = normalized.split(',');
-
-    const integerDigits =
-      onlyNumbers(
-        integerPart
-      );
-
-    const integerFormatted =
-      formatNumber(
-        Number(
-          integerDigits || '0'
-        )
-      );
-
-    if (!hasComma) {
-      return integerFormatted;
-    }
-
-    const decimals =
-      onlyNumbers(
-        decimalPart
-      ).slice(0, 2);
-
-    return `${integerFormatted},${decimals}`;
   }
 }

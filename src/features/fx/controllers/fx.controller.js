@@ -12,7 +12,8 @@ import {
 } from '../services/fx-request.mapper.js';
 
 import {
-  FxService
+  FxService,
+  FxServiceError
 } from '../services/fx.service.js';
 
 import {
@@ -30,12 +31,6 @@ import {
 /**
  * @typedef {Object} FxRuntimeConfig
  * @property {string} webhookUrl
- */
-
-/**
- * @typedef {Error & {
- *   status?: number
- * }} FxRequestError
  */
 
 export class FxController {
@@ -83,9 +78,7 @@ export class FxController {
     }
 
     this.view =
-      new FxView(
-        wrapper
-      );
+      new FxView(wrapper);
 
     this.viewModel =
       new FxConverterViewModel();
@@ -98,9 +91,10 @@ export class FxController {
 
     this.bindEvents();
 
-    this.view.updateInterestAvailability(
-      FX_CONFIG.MAX_INTERESTS
-    );
+    this.view
+      .updateInterestAvailability(
+        FX_CONFIG.MAX_INTERESTS
+      );
 
     this.renderDirection();
     this.renderSummary();
@@ -113,22 +107,28 @@ export class FxController {
   bindEvents() {
     this.view.bindEvents({
       onAmountInput:
-        () => this.handleAmountInput(),
+        () =>
+          this.handleAmountInput(),
 
       onPhoneInput:
-        () => this.handlePhoneInput(),
+        () =>
+          this.handlePhoneInput(),
 
       onInterestsChange:
-        () => this.handleInterestsChange(),
+        () =>
+          this.handleInterestsChange(),
 
       onConsentChange:
-        () => this.handleConsentChange(),
+        () =>
+          this.handleConsentChange(),
 
       onSwap:
-        () => this.handleSwap(),
+        () =>
+          this.handleSwap(),
 
       onConvert:
-        () => this.handleConversion()
+        () =>
+          this.handleConversion()
     });
   }
 
@@ -158,7 +158,8 @@ export class FxController {
     }
 
     const phone =
-      this.view.normalizePhoneInput();
+      this.view
+        .normalizePhoneInput();
 
     this.viewModel.setIdentity(
       phone,
@@ -172,15 +173,17 @@ export class FxController {
 
   handleInterestsChange() {
     const interests =
-      this.view.getSelectedInterests();
+      this.view
+        .getSelectedInterests();
 
     this.viewModel.setInterests(
       interests
     );
 
-    this.view.updateInterestAvailability(
-      FX_CONFIG.MAX_INTERESTS
-    );
+    this.view
+      .updateInterestAvailability(
+        FX_CONFIG.MAX_INTERESTS
+      );
 
     this.view.clearError(
       'interest'
@@ -214,14 +217,13 @@ export class FxController {
     const currencyTo =
       this.viewModel.currencyFrom;
 
-    this.viewModel.setCurrencies(
-      currencyFrom,
-      currencyTo
-    );
+    this.viewModel
+      .setCurrencies(
+        currencyFrom,
+        currencyTo
+      );
 
-    this.viewModel.setAmount(
-      0
-    );
+    this.viewModel.setAmount(0);
 
     this.view.clearAmount();
 
@@ -263,7 +265,8 @@ export class FxController {
     }
 
     const operation =
-      this.viewModel.getOperation();
+      this.viewModel
+        .getOperation();
 
     this.view.setLoading(
       true,
@@ -283,7 +286,7 @@ export class FxController {
           );
 
       const conversion =
-        response?.conversion;
+        response.conversion;
 
       const rate =
         Number(
@@ -309,13 +312,12 @@ export class FxController {
         .setConversionResult({
           rate,
           result,
-
           updatedAt:
             conversion.updatedAt ??
             null,
-
           quoteMaxInterval:
-            conversion.quoteMaxInterval ??
+            conversion
+              .quoteMaxInterval ??
             null
         });
 
@@ -331,14 +333,10 @@ export class FxController {
       }
 
       this.renderConversionResult();
-
     } catch (error) {
       this.handleRequestError(
-        /** @type {FxRequestError} */ (
-          error
-        )
+        error
       );
-
     } finally {
       this.view.setLoading(
         false,
@@ -364,7 +362,8 @@ export class FxController {
     );
 
     this.viewModel.setInterests(
-      this.view.getSelectedInterests()
+      this.view
+        .getSelectedInterests()
     );
 
     this.view.clearAllErrors();
@@ -410,20 +409,21 @@ export class FxController {
       this.viewModel
         .getOperation();
 
-    this.view.renderConversionResult({
-      result:
-        this.viewModel.result,
+    this.view
+      .renderConversionResult({
+        result:
+          this.viewModel.result,
 
-      currencyTo:
-        this.viewModel.currencyTo,
+        currencyTo:
+          this.viewModel.currencyTo,
 
-      operationLabel:
-        FX_OPERATION_LABELS[
-          operation
-        ],
+        operationLabel:
+          FX_OPERATION_LABELS[
+            operation
+          ],
 
-      displayRate
-    });
+        displayRate
+      });
   }
 
   clearConversionResult() {
@@ -437,7 +437,9 @@ export class FxController {
   /**
    * @param {string | null} error
    */
-  handleValidationError(error) {
+  handleValidationError(
+    error
+  ) {
     switch (error) {
       case 'INVALID_PHONE':
         this.view.showError(
@@ -474,7 +476,8 @@ export class FxController {
       case 'INVALID_CURRENCY_PAIR':
         this.view.showError(
           'conversion',
-          FX_MESSAGES.UNSUPPORTED_CONVERSION
+          FX_MESSAGES
+            .UNSUPPORTED_CONVERSION
         );
         break;
 
@@ -487,9 +490,23 @@ export class FxController {
   }
 
   /**
-   * @param {FxRequestError} error
+   * @param {unknown} error
    */
-  handleRequestError(error) {
+  handleRequestError(
+    error
+  ) {
+    if (
+      !(error instanceof
+        FxServiceError)
+    ) {
+      this.view.showError(
+        'conversion',
+        FX_MESSAGES.GENERIC_ERROR
+      );
+
+      return;
+    }
+
     let message =
       FX_MESSAGES.GENERIC_ERROR;
 
@@ -501,7 +518,8 @@ export class FxController {
 
       case 422:
         message =
-          FX_MESSAGES.UNSUPPORTED_CONVERSION;
+          FX_MESSAGES
+            .UNSUPPORTED_CONVERSION;
         break;
 
       case 429:

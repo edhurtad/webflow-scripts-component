@@ -4,7 +4,27 @@ import {
 } from '../constants/fx.constants.js';
 
 /**
- * @typedef {'INVALID_PHONE' | 'CONSENT_REQUIRED' | 'INVALID_AMOUNT' | 'MAX_INTERESTS' | 'INVALID_CURRENCY_PAIR'} FxValidationError
+ * @typedef {'COP' | 'USD'} FxCurrency
+ */
+
+/**
+ * @typedef {
+ *   'INVALID_PHONE' |
+ *   'CONSENT_REQUIRED' |
+ *   'INVALID_AMOUNT' |
+ *   'MAX_INTERESTS' |
+ *   'INVALID_CURRENCY_PAIR'
+ * } FxValidationError
+ */
+
+/**
+ * @typedef {Object} FxValidationData
+ * @property {string} phone
+ * @property {boolean} consent
+ * @property {number} amount
+ * @property {FxCurrency} currencyFrom
+ * @property {FxCurrency} currencyTo
+ * @property {string[]} interests
  */
 
 /**
@@ -17,45 +37,50 @@ import {
  * @param {string} phone
  * @returns {boolean}
  */
-export function isValidPhone(phone) {
-  return /^3\d{9}$/.test(
-    String(phone || '')
-  );
-}
+export const isValidPhone = (
+  phone
+) => /^3\d{9}$/.test(
+  String(phone || '')
+);
 
 /**
- * @param {string} currencyFrom
- * @param {string} currencyTo
+ * @param {FxCurrency} currencyFrom
+ * @param {FxCurrency} currencyTo
  * @returns {boolean}
  */
-export function isValidCurrencyPair(
+export const isValidCurrencyPair = (
   currencyFrom,
   currencyTo
-) {
-  return (
-    (
-      currencyFrom === FX_CURRENCIES.COP &&
-      currencyTo === FX_CURRENCIES.USD
-    ) ||
-    (
-      currencyFrom === FX_CURRENCIES.USD &&
-      currencyTo === FX_CURRENCIES.COP
-    )
-  );
-}
+) => (
+  (
+    currencyFrom === FX_CURRENCIES.COP &&
+    currencyTo === FX_CURRENCIES.USD
+  ) ||
+  (
+    currencyFrom === FX_CURRENCIES.USD &&
+    currencyTo === FX_CURRENCIES.COP
+  )
+);
 
 /**
- * @param {{
- *   phone: string,
- *   consent: boolean,
- *   amount: number,
- *   currencyFrom: string,
- *   currencyTo: string,
- *   interests: string[]
- * }} data
+ * @param {string[]} interests
+ * @returns {boolean}
+ */
+export const hasValidInterests = (
+  interests
+) => (
+  Array.isArray(interests) &&
+  interests.length <=
+    FX_CONFIG.MAX_INTERESTS
+);
+
+/**
+ * @param {FxValidationData} data
  * @returns {FxValidationResult}
  */
-export function validateFxConversion(data) {
+export const validateFxConversion = (
+  data
+) => {
   if (!isValidPhone(data.phone)) {
     return {
       valid: false,
@@ -93,9 +118,9 @@ export function validateFxConversion(data) {
   }
 
   if (
-    !Array.isArray(data.interests) ||
-    data.interests.length >
-      FX_CONFIG.MAX_INTERESTS
+    !hasValidInterests(
+      data.interests
+    )
   ) {
     return {
       valid: false,
@@ -107,4 +132,4 @@ export function validateFxConversion(data) {
     valid: true,
     error: null
   };
-}
+};
