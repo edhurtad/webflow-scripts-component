@@ -1,12 +1,15 @@
 import {
-  FX_CONFIG,
-  FX_CURRENCIES
+  FX_CONFIG
 } from '../constants/fx.constants.js';
 
 import {
   FX_MESSAGES,
   FX_OPERATION_LABELS
 } from '../constants/fx.messages.js';
+
+import {
+  mapFxConversionRequest
+} from '../services/fx-request.mapper.js';
 
 import {
   FxService
@@ -25,12 +28,14 @@ import {
 } from '../views/fx.view.js';
 
 /**
- * @typedef {'BUY' | 'SELL'} FxOperation
+ * @typedef {Object} FxRuntimeConfig
+ * @property {string} webhookUrl
  */
 
 /**
- * @typedef {Object} FxRuntimeConfig
- * @property {string} webhookUrl
+ * @typedef {Error & {
+ *   status?: number
+ * }} FxRequestError
  */
 
 export class FxController {
@@ -71,9 +76,7 @@ export class FxController {
         window
       ).FX_CONFIG;
 
-    if (
-      !config?.webhookUrl
-    ) {
+    if (!config?.webhookUrl) {
       throw new Error(
         'FX_WEBHOOK_NOT_CONFIGURED'
       );
@@ -110,28 +113,22 @@ export class FxController {
   bindEvents() {
     this.view.bindEvents({
       onAmountInput:
-        () =>
-          this.handleAmountInput(),
+        () => this.handleAmountInput(),
 
       onPhoneInput:
-        () =>
-          this.handlePhoneInput(),
+        () => this.handlePhoneInput(),
 
       onInterestsChange:
-        () =>
-          this.handleInterestsChange(),
+        () => this.handleInterestsChange(),
 
       onConsentChange:
-        () =>
-          this.handleConsentChange(),
+        () => this.handleConsentChange(),
 
       onSwap:
-        () =>
-          this.handleSwap(),
+        () => this.handleSwap(),
 
       onConvert:
-        () =>
-          this.handleConversion()
+        () => this.handleConversion()
     });
   }
 
@@ -257,9 +254,7 @@ export class FxController {
           this.viewModel.interests
       });
 
-    if (
-      !validation.valid
-    ) {
+    if (!validation.valid) {
       this.handleValidationError(
         validation.error
       );
@@ -268,7 +263,7 @@ export class FxController {
     }
 
     const operation =
-      this.getOperation();
+      this.viewModel.getOperation();
 
     this.view.setLoading(
       true,
@@ -276,10 +271,16 @@ export class FxController {
     );
 
     try {
-      const response =
-        await this.service.requestConversion(
-          this.createPayload()
+      const payload =
+        mapFxConversionRequest(
+          this.viewModel
         );
+
+      const response =
+        await this.service
+          .requestConversion(
+            payload
+          );
 
       const conversion =
         response?.conversion;
@@ -304,23 +305,25 @@ export class FxController {
         );
       }
 
-      this.viewModel.setConversionResult({
-        rate,
-        result,
+      this.viewModel
+        .setConversionResult({
+          rate,
+          result,
 
-        updatedAt:
-          conversion.updatedAt ??
-          null,
+          updatedAt:
+            conversion.updatedAt ??
+            null,
 
-        quoteMaxInterval:
-          conversion.quoteMaxInterval ??
-          null
-      });
+          quoteMaxInterval:
+            conversion.quoteMaxInterval ??
+            null
+        });
 
       if (
         !this.viewModel.identified
       ) {
-        this.viewModel.lockIdentity();
+        this.viewModel
+          .lockIdentity();
 
         this.view.lockIdentity(
           this.viewModel.phone
@@ -331,7 +334,9 @@ export class FxController {
 
     } catch (error) {
       this.handleRequestError(
-        error
+        /** @type {FxRequestError} */ (
+          error
+        )
       );
 
     } finally {
@@ -365,46 +370,6 @@ export class FxController {
     this.view.clearAllErrors();
   }
 
-  createPayload() {
-    return {
-      event:
-        FX_CONFIG.EVENT_NAME,
-
-      messageId:
-        this.createMessageId(),
-
-      timestamp:
-        new Date()
-          .toISOString(),
-
-      source:
-        FX_CONFIG.SOURCE,
-
-      phone:
-        this.viewModel.phone,
-
-      phoneInternational:
-        `${FX_CONFIG.COUNTRY_CODE}${this.viewModel.phone}`,
-
-      dataConsent:
-        true,
-
-      conversion: {
-        amount:
-          this.viewModel.amount,
-
-        currencyFrom:
-          this.viewModel.currencyFrom,
-
-        currencyTo:
-          this.viewModel.currencyTo,
-
-        interests:
-          this.viewModel.interests
-      }
-    };
-  }
-
   renderDirection() {
     this.view.renderDirection(
       this.viewModel.currencyFrom,
@@ -430,7 +395,8 @@ export class FxController {
 
   renderConversionResult() {
     const displayRate =
-      this.getDisplayRate();
+      this.viewModel
+        .getDisplayRate();
 
     if (
       !Number.isFinite(
@@ -440,6 +406,10 @@ export class FxController {
       return;
     }
 
+    const operation =
+      this.viewModel
+        .getOperation();
+
     this.view.renderConversionResult({
       result:
         this.viewModel.result,
@@ -448,7 +418,9 @@ export class FxController {
         this.viewModel.currencyTo,
 
       operationLabel:
-        this.getOperationLabel(),
+        FX_OPERATION_LABELS[
+          operation
+        ],
 
       displayRate
     });
@@ -458,60 +430,8 @@ export class FxController {
     this.viewModel
       .clearConversionResult();
 
-    this.view.clearConversionResult();
-  }
-
-  /**
-   * @returns {FxOperation}
-   */
-  getOperation() {
-    if (
-      this.viewModel.currencyFrom ===
-        FX_CURRENCIES.COP &&
-      this.viewModel.currencyTo ===
-        FX_CURRENCIES.USD
-    ) {
-      return 'BUY';
-    }
-
-    return 'SELL';
-  }
-
-  /**
-   * @returns {string}
-   */
-  getOperationLabel() {
-    return (
-      FX_OPERATION_LABELS[
-        this.getOperation()
-      ]
-    );
-  }
-
-  /**
-   * @returns {number | null}
-   */
-  getDisplayRate() {
-    const rate =
-      this.viewModel.rate;
-
-    if (
-      !Number.isFinite(rate) ||
-      rate <= 0
-    ) {
-      return null;
-    }
-
-    if (
-      this.viewModel.currencyFrom ===
-        FX_CURRENCIES.COP &&
-      this.viewModel.currencyTo ===
-        FX_CURRENCIES.USD
-    ) {
-      return 1 / rate;
-    }
-
-    return rate;
+    this.view
+      .clearConversionResult();
   }
 
   /**
@@ -567,15 +487,13 @@ export class FxController {
   }
 
   /**
-   * @param {Error & {status?: number}} error
+   * @param {FxRequestError} error
    */
   handleRequestError(error) {
     let message =
       FX_MESSAGES.GENERIC_ERROR;
 
-    switch (
-      error?.status
-    ) {
+    switch (error.status) {
       case 400:
         message =
           FX_MESSAGES.INVALID_REQUEST;
@@ -605,26 +523,5 @@ export class FxController {
       'conversion',
       message
     );
-  }
-
-  /**
-   * @returns {string}
-   */
-  createMessageId() {
-    if (
-      window.crypto &&
-      typeof window.crypto.randomUUID ===
-        'function'
-    ) {
-      return window.crypto.randomUUID();
-    }
-
-    return [
-      'fx',
-      Date.now(),
-      Math.random()
-        .toString(16)
-        .slice(2)
-    ].join('-');
   }
 }

@@ -1,4 +1,16 @@
 import {
+  formatNumber
+} from '../../../shared/utils/formatters/number.formatter.js';
+
+import {
+  formatPhone
+} from '../../../shared/utils/formatters/phone.formatter.js';
+
+import {
+  onlyNumbers
+} from '../../../shared/utils/string.utils.js';
+
+import {
   FX_INTEREST_LABELS
 } from '../constants/fx.messages.js';
 
@@ -228,16 +240,12 @@ export class FxView {
             action
           ).dataset.fxAction;
 
-        if (
-          actionName === 'swap'
-        ) {
+        if (actionName === 'swap') {
           handlers.onSwap();
           return;
         }
 
-        if (
-          actionName === 'convert'
-        ) {
+        if (actionName === 'convert') {
           handlers.onConvert();
         }
       }
@@ -248,7 +256,7 @@ export class FxView {
    * @returns {string}
    */
   getPhone() {
-    return this.onlyNumbers(
+    return onlyNumbers(
       this.phone?.value || ''
     );
   }
@@ -268,12 +276,10 @@ export class FxView {
   getSelectedInterests() {
     return this.interests
       .filter(
-        (input) =>
-          input.checked
+        (input) => input.checked
       )
       .map(
-        (input) =>
-          input.value
+        (input) => input.value
       );
   }
 
@@ -319,17 +325,12 @@ export class FxView {
     }
 
     const phone =
-      this.onlyNumbers(
+      onlyNumbers(
         this.phone.value
-      ).slice(
-        0,
-        10
-      );
+      ).slice(0, 10);
 
     this.phone.value =
-      this.formatPhone(
-        phone
-      );
+      formatPhone(phone);
 
     return phone;
   }
@@ -420,6 +421,11 @@ export class FxView {
       return;
     }
 
+    const fractionDigits =
+      data.currencyFrom === 'USD'
+        ? 2
+        : 0;
+
     const amountText =
       data.amount > 0
         ? `${
@@ -427,9 +433,10 @@ export class FxView {
               ? 'US$'
               : '$'
           } ${
-            this.formatMoney(
+            formatNumber(
               data.amount,
-              data.currencyFrom
+              fractionDigits,
+              fractionDigits
             )
           }`
         : 'sin monto';
@@ -457,31 +464,38 @@ export class FxView {
    * @param {FxResultView} data
    */
   renderConversionResult(data) {
+    const fractionDigits =
+      data.currencyTo === 'USD'
+        ? 2
+        : 0;
+
+    const formattedResult =
+      formatNumber(
+        data.result,
+        fractionDigits,
+        fractionDigits
+      );
+
+    const formattedRate =
+      formatNumber(
+        data.displayRate,
+        2,
+        4
+      );
+
     if (this.previewResult) {
       this.previewResult.textContent =
-        this.formatMoney(
-          data.result,
-          data.currencyTo
-        );
+        formattedResult;
     }
 
     if (this.resultValue) {
       this.resultValue.textContent =
-        `${
-          this.formatMoney(
-            data.result,
-            data.currencyTo
-          )
-        } ${data.currencyTo}`;
+        `${formattedResult} ${data.currencyTo}`;
     }
 
     if (this.resultRate) {
       this.resultRate.textContent =
-        `${data.operationLabel}: 1 USD ≈ ${
-          this.formatRate(
-            data.displayRate
-          )
-        } COP`;
+        `${data.operationLabel}: 1 USD ≈ ${formattedRate} COP`;
     }
 
     if (this.conversionResult) {
@@ -491,11 +505,7 @@ export class FxView {
 
     if (this.headerRate) {
       this.headerRate.textContent =
-        `1 USD ≈ ${
-          this.formatRate(
-            data.displayRate
-          )
-        } COP`;
+        `1 USD ≈ ${formattedRate} COP`;
     }
 
     if (this.conversionHelper) {
@@ -517,7 +527,7 @@ export class FxView {
 
     if (this.headerRate) {
       this.headerRate.textContent =
-        'Consulte una conversión';
+        'Consulta tu conversión';
     }
 
     if (this.conversionHelper) {
@@ -538,9 +548,7 @@ export class FxView {
   lockIdentity(phone) {
     if (this.phone) {
       this.phone.value =
-        this.formatPhone(
-          phone
-        );
+        formatPhone(phone);
 
       this.phone.disabled =
         true;
@@ -556,9 +564,7 @@ export class FxView {
 
     this.phoneStatus
       ?.classList
-      .add(
-        'is-visible'
-      );
+      .add('is-visible');
   }
 
   /**
@@ -664,23 +670,8 @@ export class FxView {
    * @param {string} value
    * @returns {string}
    */
-  onlyNumbers(value) {
-    return String(
-      value || ''
-    ).replace(
-      /\D/g,
-      ''
-    );
-  }
-
-  /**
-   * @param {string} value
-   * @returns {string}
-   */
   sanitizeCopAmount(value) {
-    return this.onlyNumbers(
-      value
-    );
+    return onlyNumbers(value);
   }
 
   /**
@@ -688,10 +679,8 @@ export class FxView {
    * @returns {string}
    */
   sanitizeUsdAmount(value) {
-    let raw =
-      String(
-        value || ''
-      )
+    const raw =
+      String(value || '')
         .replace(
           /[^\d.,]/g,
           ''
@@ -704,16 +693,12 @@ export class FxView {
     const commaIndex =
       raw.indexOf(',');
 
-    if (
-      commaIndex === -1
-    ) {
-      return this.onlyNumbers(
-        raw
-      );
+    if (commaIndex === -1) {
+      return onlyNumbers(raw);
     }
 
     const integerPart =
-      this.onlyNumbers(
+      onlyNumbers(
         raw.slice(
           0,
           commaIndex
@@ -721,18 +706,13 @@ export class FxView {
       );
 
     const decimalPart =
-      this.onlyNumbers(
+      onlyNumbers(
         raw.slice(
           commaIndex + 1
         )
-      ).slice(
-        0,
-        2
-      );
+      ).slice(0, 2);
 
-    return (
-      `${integerPart},${decimalPart}`
-    );
+    return `${integerPart},${decimalPart}`;
   }
 
   /**
@@ -748,27 +728,19 @@ export class FxView {
       return 0;
     }
 
-    if (
-      currency === 'COP'
-    ) {
+    if (currency === 'COP') {
       const number =
         Number(
-          this.onlyNumbers(
-            value
-          )
+          onlyNumbers(value)
         );
 
-      return Number.isFinite(
-        number
-      )
+      return Number.isFinite(number)
         ? number
         : 0;
     }
 
     const normalized =
-      String(
-        value
-      )
+      String(value)
         .replace(
           /\./g,
           ''
@@ -783,13 +755,9 @@ export class FxView {
         );
 
     const number =
-      Number(
-        normalized
-      );
+      Number(normalized);
 
-    return Number.isFinite(
-      number
-    )
+    return Number.isFinite(number)
       ? number
       : 0;
   }
@@ -800,24 +768,14 @@ export class FxView {
    */
   formatCopInput(value) {
     const digits =
-      this.onlyNumbers(
-        value
-      );
+      onlyNumbers(value);
 
     if (!digits) {
       return '';
     }
 
-    return new Intl.NumberFormat(
-      'es-CO',
-      {
-        maximumFractionDigits:
-          0
-      }
-    ).format(
-      Number(
-        digits
-      )
+    return formatNumber(
+      Number(digits)
     );
   }
 
@@ -831,29 +789,23 @@ export class FxView {
     }
 
     const normalized =
-      String(
-        value
-      );
+      String(value);
 
     const hasComma =
       normalized.includes(',');
 
-    const parts =
-      normalized.split(',');
+    const [
+      integerPart,
+      decimalPart = ''
+    ] = normalized.split(',');
 
     const integerDigits =
-      this.onlyNumbers(
-        parts[0]
+      onlyNumbers(
+        integerPart
       );
 
     const integerFormatted =
-      new Intl.NumberFormat(
-        'es-CO',
-        {
-          maximumFractionDigits:
-            0
-        }
-      ).format(
+      formatNumber(
         Number(
           integerDigits || '0'
         )
@@ -864,91 +816,10 @@ export class FxView {
     }
 
     const decimals =
-      this.onlyNumbers(
-        parts[1] || ''
-      ).slice(
-        0,
-        2
-      );
+      onlyNumbers(
+        decimalPart
+      ).slice(0, 2);
 
-    return (
-      `${integerFormatted},${decimals}`
-    );
-  }
-
-  /**
-   * @param {number} value
-   * @param {FxCurrency} currency
-   * @returns {string}
-   */
-  formatMoney(
-    value,
-    currency
-  ) {
-    if (
-      !Number.isFinite(
-        value
-      )
-    ) {
-      return '—';
-    }
-
-    return new Intl.NumberFormat(
-      'es-CO',
-      {
-        minimumFractionDigits:
-          currency === 'USD'
-            ? 2
-            : 0,
-
-        maximumFractionDigits:
-          currency === 'USD'
-            ? 2
-            : 0
-      }
-    ).format(
-      value
-    );
-  }
-
-  /**
-   * @param {number} value
-   * @returns {string}
-   */
-  formatRate(value) {
-    return new Intl.NumberFormat(
-      'es-CO',
-      {
-        minimumFractionDigits:
-          2,
-
-        maximumFractionDigits:
-          4
-      }
-    ).format(
-      value
-    );
-  }
-
-  /**
-   * @param {string} value
-   * @returns {string}
-   */
-  formatPhone(value) {
-    const digits =
-      this.onlyNumbers(
-        value
-      ).slice(
-        0,
-        10
-      );
-
-    return [
-      digits.slice(0, 3),
-      digits.slice(3, 6),
-      digits.slice(6, 10)
-    ]
-      .filter(Boolean)
-      .join(' ');
+    return `${integerFormatted},${decimals}`;
   }
 }
