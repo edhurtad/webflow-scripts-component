@@ -11,6 +11,10 @@ import {
 } from '../../../shared/utils/string.utils.js';
 
 import {
+  FX_CURRENCY_LABELS
+} from '../constants/fx.constants.js';
+
+import {
   FX_INTEREST_LABELS
 } from '../constants/fx.messages.js';
 
@@ -376,14 +380,24 @@ export class FxView {
     currencyFrom,
     currencyTo
   ) {
+    const currencyFromLabel =
+      FX_CURRENCY_LABELS[
+        currencyFrom
+      ] || currencyFrom;
+
+    const currencyToLabel =
+      FX_CURRENCY_LABELS[
+        currencyTo
+      ] || currencyTo;
+
     if (this.currencyFrom) {
       this.currencyFrom.textContent =
-        currencyFrom;
+        currencyFromLabel;
     }
 
     if (this.currencyTo) {
       this.currencyTo.textContent =
-        currencyTo;
+        currencyToLabel;
     }
 
     if (this.fromSymbol) {
@@ -402,7 +416,7 @@ export class FxView {
 
     if (this.direction) {
       this.direction.textContent =
-        `${currencyFrom} → ${currencyTo}`;
+        `${currencyFromLabel} → ${currencyToLabel}`;
     }
 
     if (this.amountInput) {
@@ -420,6 +434,16 @@ export class FxView {
     if (!this.selectionSummary) {
       return;
     }
+
+    const currencyFromLabel =
+      FX_CURRENCY_LABELS[
+        data.currencyFrom
+      ] || data.currencyFrom;
+
+    const currencyToLabel =
+      FX_CURRENCY_LABELS[
+        data.currencyTo
+      ] || data.currencyTo;
 
     const fractionDigits =
       data.currencyFrom === 'USD'
@@ -457,13 +481,24 @@ export class FxView {
         : '';
 
     this.selectionSummary.textContent =
-      `${data.currencyFrom} → ${data.currencyTo} · ${amountText}${interestsText}`;
+      `${currencyFromLabel} → ${currencyToLabel} · ${amountText}${interestsText}`;
   }
 
   /**
    * @param {FxResultView} data
    */
   renderConversionResult(data) {
+    const currencyToLabel =
+      FX_CURRENCY_LABELS[
+        data.currencyTo
+      ] || data.currencyTo;
+
+    const usdLabel =
+      FX_CURRENCY_LABELS.USD;
+
+    const copLabel =
+      FX_CURRENCY_LABELS.COP;
+
     const fractionDigits =
       data.currencyTo === 'USD'
         ? 2
@@ -490,12 +525,12 @@ export class FxView {
 
     if (this.resultValue) {
       this.resultValue.textContent =
-        `${formattedResult} ${data.currencyTo}`;
+        `${formattedResult} ${currencyToLabel}`;
     }
 
     if (this.resultRate) {
       this.resultRate.textContent =
-        `${data.operationLabel}: 1 USD ≈ ${formattedRate} COP`;
+        `${data.operationLabel}: 1 ${usdLabel} ≈ ${formattedRate} ${copLabel}`;
     }
 
     if (this.conversionResult) {
@@ -505,7 +540,7 @@ export class FxView {
 
     if (this.headerRate) {
       this.headerRate.textContent =
-        `1 USD ≈ ${formattedRate} COP`;
+        `1 ${usdLabel} ≈ ${formattedRate} ${copLabel}`;
     }
 
     if (this.conversionHelper) {

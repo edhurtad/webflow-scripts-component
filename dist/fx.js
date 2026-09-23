@@ -9,6 +9,7 @@ const init = () => {
   fxController.init();
 };
 
+
 document.addEventListener(
   'DOMContentLoaded',
   init

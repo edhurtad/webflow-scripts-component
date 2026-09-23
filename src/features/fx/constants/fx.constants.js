@@ -26,6 +26,11 @@ export const FX_CURRENCIES = Object.freeze({
   USD: 'USD'
 });
 
+export const FX_CURRENCY_LABELS = Object.freeze({
+  COP: 'COP',
+  USD: 'USDW'
+});
+
 export const FX_DIRECTIONS = Object.freeze({
   COP_USD: 'COP_USD',
   USD_COP: 'USD_COP'
