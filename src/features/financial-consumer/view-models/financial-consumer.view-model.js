@@ -1,6 +1,7 @@
-/**
- * @returns {string}
- */
+import {
+  onlyNumbers,
+} from "../../../shared/utils/string.utils.js";
+
 export const getTodayIsoDate = () => {
   const today = new Date();
 
@@ -17,10 +18,6 @@ export const getTodayIsoDate = () => {
   return `${year}-${month}-${day}`;
 };
 
-/**
- * @param {string} value
- * @returns {string}
- */
 export const formatSubmissionDate = (value = "") => {
   if (!value) return "";
 
@@ -34,14 +31,15 @@ export const formatSubmissionDate = (value = "") => {
 };
 
 /**
- *
  * @param {string | number} value
  * @returns {string}
  */
 export const normalizeAmount = (value = "") => {
-  const normalizedValue = String(value)
-    .replace(/[^\d]/g, "")
-    .replace(/^0+(?=\d)/, "");
+  const normalizedValue =
+    onlyNumbers(value).replace(
+      /^0+(?=\d)/,
+      ""
+    );
 
   return normalizedValue || "0";
 };
@@ -51,7 +49,8 @@ export const normalizeAmount = (value = "") => {
  * @returns {string}
  */
 export const formatAmount = (value = "") => {
-  const normalizedValue = normalizeAmount(value);
+  const normalizedValue =
+    normalizeAmount(value);
 
   return normalizedValue.replace(
     /\B(?=(\d{3})+(?!\d))/g,

@@ -15,12 +15,24 @@ import {
 } from "../services/location.service.js";
 
 import {
-  sanitizeDigits,
-  isValidPhoneNumber,
   isValidDocumentNumber,
-  isValidEmail,
-  isValidFileSize,
 } from "../validators/financial-consumer.validator.js";
+
+import {
+  onlyNumbers,
+} from "../../../shared/utils/string.utils.js";
+
+import {
+  isValidEmail,
+} from "../../../shared/validators/email.validator.js";
+
+import {
+  isValidPhoneNumber,
+} from "../../../shared/validators/phone.validator.js";
+
+import {
+  isValidFileSize,
+} from "../../../shared/validators/file.validator.js";
 
 import {
   getTodayIsoDate,
@@ -45,11 +57,6 @@ export class FinancialConsumerController {
     this.amountHiddenInput = null;
   }
 
-  /**
-   * Inicializa el comportamiento del formulario.
-   *
-   * @returns {Promise<void>}
-   */
   async init() {
     this.setupSubmissionDate();
     this.setupAmount();
@@ -66,14 +73,9 @@ export class FinancialConsumerController {
     this.view.renderCities();
   }
 
-  /**
-   * Configura la fecha actual y prepara el valor
-   * que se enviará al formulario.
-   *
-   * @returns {void}
-   */
   setupSubmissionDate() {
-    const input = this.view.submissionDateInput;
+    const input =
+      this.view.submissionDateInput;
 
     if (!input) return;
 
@@ -94,12 +96,6 @@ export class FinancialConsumerController {
     });
   }
 
-  /**
-   * Sincroniza la fecha visible con el valor
-   * DD/MM/AAAA enviado al formulario.
-   *
-   * @returns {void}
-   */
   syncSubmissionDate() {
     if (
       !this.submissionDateHiddenInput ||
@@ -114,14 +110,9 @@ export class FinancialConsumerController {
       );
   }
 
-  /**
-   * Configura el formato visual y valor normalizado
-   * del monto de reclamación.
-   *
-   * @returns {void}
-   */
   setupAmount() {
-    const input = this.view.amountInput;
+    const input =
+      this.view.amountInput;
 
     if (!input) return;
 
@@ -152,12 +143,6 @@ export class FinancialConsumerController {
     updateAmount();
   }
 
-  /**
-   * Configura validación y sanitización
-   * del número de documento.
-   *
-   * @returns {void}
-   */
   setupDocumentNumber() {
     const input =
       this.view.documentNumberInput;
@@ -165,7 +150,7 @@ export class FinancialConsumerController {
     if (!input) return;
 
     input.addEventListener("input", () => {
-      input.value = sanitizeDigits(
+      input.value = onlyNumbers(
         input.value
       ).slice(
         0,
@@ -188,13 +173,9 @@ export class FinancialConsumerController {
     });
   }
 
-  /**
-   * Configura la validación del correo electrónico.
-   *
-   * @returns {void}
-   */
   setupEmail() {
-    const input = this.view.emailInput;
+    const input =
+      this.view.emailInput;
 
     if (!input) return;
 
@@ -212,12 +193,6 @@ export class FinancialConsumerController {
     });
   }
 
-  /**
-   * Configura la validación y sanitización
-   * del número celular.
-   *
-   * @returns {void}
-   */
   setupPhoneNumber() {
     const input =
       this.view.phoneNumberInput;
@@ -225,7 +200,7 @@ export class FinancialConsumerController {
     if (!input) return;
 
     input.addEventListener("input", () => {
-      input.value = sanitizeDigits(
+      input.value = onlyNumbers(
         input.value
       ).slice(
         0,
@@ -248,12 +223,6 @@ export class FinancialConsumerController {
     });
   }
 
-  /**
-   * Configura los contadores de caracteres
-   * para los campos de texto extensos.
-   *
-   * @returns {void}
-   */
   setupTextCounters() {
     this.view.setupCounter({
       textarea:
@@ -278,12 +247,6 @@ export class FinancialConsumerController {
     });
   }
 
-  /**
-   * Configura los campos condicionales
-   * de otro producto y otro servicio.
-   *
-   * @returns {void}
-   */
   setupConditionalFields() {
     const syncProductField = () => {
       const shouldShow =
@@ -327,10 +290,6 @@ export class FinancialConsumerController {
     syncServiceField();
   }
 
-  /**
-
-   * @returns {void}
-   */
   setupFileInputs() {
     this.view.fileInputs.forEach(
       (input) => {
@@ -365,12 +324,6 @@ export class FinancialConsumerController {
     );
   }
 
-  /**
-   * Configura el listener de cambio
-   * del departamento.
-   *
-   * @returns {void}
-   */
   setupLocationListeners() {
     this.view.departmentSelect?.addEventListener(
       "change",
@@ -380,11 +333,6 @@ export class FinancialConsumerController {
     );
   }
 
-  /**
-   * Obtiene y renderiza los departamentos.
-   *
-   * @returns {Promise<void>}
-   */
   async loadDepartments() {
     try {
       const departments =
@@ -402,12 +350,6 @@ export class FinancialConsumerController {
     }
   }
 
-  /**
-   * Obtiene y renderiza las ciudades
-   * correspondientes al departamento seleccionado.
-   *
-   * @returns {Promise<void>}
-   */
   async handleDepartmentChange() {
     const departmentKey =
       this.view.getSelectedDepartmentKey();

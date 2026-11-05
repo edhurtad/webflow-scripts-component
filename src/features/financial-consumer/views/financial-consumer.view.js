@@ -40,18 +40,6 @@ import {
  */
 
 /**
- * Obtiene un elemento del DOM por ID.
- *
- * @param {string} id
- * @returns {HTMLElement|null}
- */
-const getElementById = (id) => {
-  return document.getElementById(id);
-};
-
-/**
- * Crea una opción para un select.
- *
  * @param {SelectOptionConfig} config
  * @returns {HTMLOptionElement}
  */
@@ -76,142 +64,119 @@ const createOption = ({
   return option;
 };
 
+/**
+ * @param {HTMLElement|null} field
+ * @param {HTMLTextAreaElement|null} input
+ * @param {boolean} show
+ */
+const toggleConditionalField = (field, input, show) => {
+  if (!field || !input) return;
+
+  field.hidden = !show;
+  field.style.display = show ? "" : "none";
+
+  input.disabled = !show;
+  input.required = show;
+
+  if (!show) {
+    input.value = "";
+  }
+};
+
 export class FinancialConsumerView {
   constructor() {
-    /** @type {HTMLInputElement|null} */
     this.documentNumberInput =
       /** @type {HTMLInputElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.documentNumber
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.documentNumber)
       );
 
-    /** @type {HTMLInputElement|null} */
     this.emailInput =
       /** @type {HTMLInputElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.email
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.email)
       );
 
-    /** @type {HTMLInputElement|null} */
     this.phoneNumberInput =
       /** @type {HTMLInputElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.phoneNumber
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.phoneNumber)
       );
 
-    /** @type {HTMLSelectElement|null} */
     this.departmentSelect =
       /** @type {HTMLSelectElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.department
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.department)
       );
 
-    /** @type {HTMLSelectElement|null} */
     this.citySelect =
       /** @type {HTMLSelectElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.city
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.city)
       );
 
-    /** @type {HTMLInputElement|null} */
     this.submissionDateInput =
       /** @type {HTMLInputElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.submissionDate
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.submissionDate)
       );
 
-    /** @type {HTMLTextAreaElement|null} */
     this.otherProductInput =
       /** @type {HTMLTextAreaElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.otherProduct
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.otherProduct)
       );
 
-    /** @type {HTMLElement|null} */
     this.otherProductField =
-      getElementById(
-        FINANCIAL_CONSUMER_IDS.otherProductField
-      );
+      document.getElementById(FINANCIAL_CONSUMER_IDS.otherProductField);
 
-    /** @type {HTMLTextAreaElement|null} */
     this.otherServiceInput =
       /** @type {HTMLTextAreaElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.otherService
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.otherService)
       );
 
-    /** @type {HTMLElement|null} */
     this.otherServiceField =
-      getElementById(
-        FINANCIAL_CONSUMER_IDS.otherServiceField
-      );
+      document.getElementById(FINANCIAL_CONSUMER_IDS.otherServiceField);
 
-    /** @type {HTMLTextAreaElement|null} */
     this.caseDescriptionInput =
       /** @type {HTMLTextAreaElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.caseDescription
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.caseDescription)
       );
 
-    /** @type {HTMLTextAreaElement|null} */
     this.specificRequestInput =
       /** @type {HTMLTextAreaElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.specificRequest
-        )
+        document.getElementById(FINANCIAL_CONSUMER_IDS.specificRequest)
       );
 
-    /** @type {HTMLInputElement|null} */
     this.amountInput =
       /** @type {HTMLInputElement|null} */ (
-        getElementById(
-          FINANCIAL_CONSUMER_IDS.amount
+        document.getElementById(FINANCIAL_CONSUMER_IDS.amount)
+      );
+
+    this.form =
+      this.submissionDateInput?.form ??
+      this.documentNumberInput?.form ??
+      null;
+
+    this.productRadios =
+      /** @type {HTMLInputElement[]} */ (
+        Array.from(
+          this.form?.querySelectorAll(
+            `input[name="${FINANCIAL_CONSUMER_NAMES.claimedProduct}"]`
+          ) ?? []
         )
       );
 
-    /** @type {HTMLInputElement[]} */
-    this.productRadios = Array.from(
-      document.querySelectorAll(
-        `input[name="${FINANCIAL_CONSUMER_NAMES.claimedProduct}"]`
-      )
-    );
+    this.serviceRadios =
+      /** @type {HTMLInputElement[]} */ (
+        Array.from(
+          this.form?.querySelectorAll(
+            `input[name="${FINANCIAL_CONSUMER_NAMES.claimedService}"]`
+          ) ?? []
+        )
+      );
 
-    /** @type {HTMLInputElement[]} */
-    this.serviceRadios = Array.from(
-      document.querySelectorAll(
-        `input[name="${FINANCIAL_CONSUMER_NAMES.claimedService}"]`
-      )
-    );
-
-    /** @type {HTMLInputElement[]} */
-    this.fileInputs = Array.from(
-      document.querySelectorAll(
-        'input[type="file"]'
-      )
-    );
-
-    /** @type {HTMLFormElement|null} */
-    this.form =
-      this.submissionDateInput?.closest("form") ??
-      this.documentNumberInput?.closest("form") ??
-      null;
+    this.fileInputs =
+      /** @type {HTMLInputElement[]} */ (
+        Array.from(
+          this.form?.querySelectorAll('input[type="file"]') ?? []
+        )
+      );
   }
 
-  /**
-   * Asigna la fecha visible del formulario.
-   *
-   * @param {string} value
-   * @returns {void}
-   */
   setSubmissionDate(value) {
     if (!this.submissionDateInput) return;
 
@@ -220,41 +185,26 @@ export class FinancialConsumerView {
   }
 
   /**
-   * Crea un input hidden asociado a un campo visible.
-   *
    * @param {HiddenFieldConfig} config
    * @returns {HTMLInputElement|null}
    */
-  createHiddenField({
-    sourceInput,
-    name,
-  }) {
-    if (!sourceInput || !this.form) {
-      return null;
-    }
+  createHiddenField({ sourceInput, name }) {
+    if (!sourceInput || !this.form) return null;
 
-    const hiddenInput =
-      document.createElement("input");
+    const hiddenInput = document.createElement("input");
 
     hiddenInput.type = "hidden";
     hiddenInput.name = name;
-    hiddenInput.dataset.source =
-      sourceInput.id;
+    hiddenInput.dataset.source = sourceInput.id;
 
     sourceInput.removeAttribute("name");
-
-    this.form.appendChild(
-      hiddenInput
-    );
+    this.form.appendChild(hiddenInput);
 
     return hiddenInput;
   }
 
   /**
-   * Renderiza las opciones de departamentos.
-   *
    * @param {Department[]} departments
-   * @returns {void}
    */
   renderDepartments(departments) {
     if (!this.departmentSelect) return;
@@ -263,8 +213,7 @@ export class FinancialConsumerView {
 
     this.departmentSelect.appendChild(
       createOption({
-        label:
-          FINANCIAL_CONSUMER_PLACEHOLDERS.department,
+        label: FINANCIAL_CONSUMER_PLACEHOLDERS.department,
         disabled: true,
         selected: true,
       })
@@ -275,18 +224,14 @@ export class FinancialConsumerView {
         createOption({
           value: department.id,
           label: department.label,
-          departmentKey:
-            department.key,
+          departmentKey: department.key,
         })
       );
     });
   }
 
   /**
-   * Renderiza las ciudades disponibles.
-   *
    * @param {City[]} [cities=[]]
-   * @returns {void}
    */
   renderCities(cities = []) {
     if (!this.citySelect) return;
@@ -295,8 +240,7 @@ export class FinancialConsumerView {
 
     this.citySelect.appendChild(
       createOption({
-        label:
-          FINANCIAL_CONSUMER_PLACEHOLDERS.city,
+        label: FINANCIAL_CONSUMER_PLACEHOLDERS.city,
         disabled: true,
         selected: true,
       })
@@ -312,117 +256,45 @@ export class FinancialConsumerView {
     });
   }
 
-  /**
-   * Obtiene la key del departamento seleccionado.
-   *
-   * @returns {string}
-   */
   getSelectedDepartmentKey() {
-    const selectedOption =
-      this.departmentSelect
-        ?.selectedOptions?.[0];
-
     return (
-      selectedOption?.dataset?.key ??
+      this.departmentSelect?.selectedOptions?.[0]?.dataset?.key ??
       ""
     );
   }
 
-  /**
-   * Obtiene el producto seleccionado.
-   *
-   * @returns {string}
-   */
   getSelectedProduct() {
     return (
-      this.productRadios.find(
-        (radio) => radio.checked
-      )?.value ?? ""
+      this.productRadios.find((radio) => radio.checked)?.value ??
+      ""
     );
   }
 
-  /**
-   * Obtiene el servicio seleccionado.
-   *
-   * @returns {string}
-   */
   getSelectedService() {
     return (
-      this.serviceRadios.find(
-        (radio) => radio.checked
-      )?.value ?? ""
+      this.serviceRadios.find((radio) => radio.checked)?.value ??
+      ""
+    );
+  }
+
+  toggleOtherProduct(show) {
+    toggleConditionalField(
+      this.otherProductField,
+      this.otherProductInput,
+      show
+    );
+  }
+
+  toggleOtherService(show) {
+    toggleConditionalField(
+      this.otherServiceField,
+      this.otherServiceInput,
+      show
     );
   }
 
   /**
-   * Muestra u oculta el campo de otro producto.
-   *
-   * @param {boolean} show
-   * @returns {void}
-   */
-  toggleOtherProduct(show) {
-    if (
-      !this.otherProductField ||
-      !this.otherProductInput
-    ) {
-      return;
-    }
-
-    this.otherProductField.hidden =
-      !show;
-
-    this.otherProductField.style.display =
-      show ? "" : "none";
-
-    this.otherProductInput.disabled =
-      !show;
-
-    this.otherProductInput.required =
-      show;
-
-    if (!show) {
-      this.otherProductInput.value =
-        "";
-    }
-  }
-
-  /**
-   * Muestra u oculta el campo de otro servicio.
-   *
-   * @param {boolean} show
-   * @returns {void}
-   */
-  toggleOtherService(show) {
-    if (
-      !this.otherServiceField ||
-      !this.otherServiceInput
-    ) {
-      return;
-    }
-
-    this.otherServiceField.hidden =
-      !show;
-
-    this.otherServiceField.style.display =
-      show ? "" : "none";
-
-    this.otherServiceInput.disabled =
-      !show;
-
-    this.otherServiceInput.required =
-      show;
-
-    if (!show) {
-      this.otherServiceInput.value =
-        "";
-    }
-  }
-
-  /**
-   * Configura un contador de caracteres.
-   *
    * @param {CounterConfig} config
-   * @returns {void}
    */
   setupCounter({
     textarea,
@@ -431,17 +303,12 @@ export class FinancialConsumerView {
   }) {
     if (!textarea) return;
 
-    textarea.maxLength =
-      maxCharacters;
+    textarea.maxLength = maxCharacters;
 
-    /** @type {HTMLElement|null} */
-    let counter =
-      getElementById(counterId);
+    let counter = document.getElementById(counterId);
 
     if (!counter) {
-      counter =
-        document.createElement("div");
-
+      counter = document.createElement("div");
       counter.id = counterId;
 
       textarea.insertAdjacentElement(
@@ -464,26 +331,17 @@ export class FinancialConsumerView {
   }
 
   /**
-   * Define un mensaje de validación nativo.
-   *
    * @param {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|null} input
    * @param {string} [message=""]
-   * @returns {void}
    */
-  setValidity(
-    input,
-    message = ""
-  ) {
+  setValidity(input, message = "") {
     if (!input) return;
 
     input.setCustomValidity(message);
   }
 
   /**
-   * Muestra el mensaje de validación nativo.
-   *
    * @param {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|null} input
-   * @returns {void}
    */
   showValidity(input) {
     input?.reportValidity();

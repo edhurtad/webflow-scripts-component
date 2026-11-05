@@ -1,4 +1,6 @@
-import { locationConfig } from "../../../shared/config/location.config.js";
+import {
+  locationConfig,
+} from "../../../shared/config/location.config.js";
 
 /**
  * @typedef {Object} Department
@@ -25,8 +27,6 @@ import { locationConfig } from "../../../shared/config/location.config.js";
  */
 
 /**
- * Obtiene y transforma una respuesta HTTP en JSON.
- *
  * @template T
  * @param {string} url
  * @returns {Promise<T>}
@@ -46,18 +46,12 @@ const fetchJson = async (url) => {
 };
 
 /**
- * Obtiene la lista de departamentos.
- *
- * Mantiene compatibilidad con la propiedad histórica
- * "deparments" de la fuente de datos.
- *
  * @returns {Promise<Department[]>}
  */
 export const getDepartments = async () => {
-  const data =
-    await fetchJson(
-      `${locationConfig.apiUrlCities}/z_departaments.json`
-    );
+  const data = await fetchJson(
+    `${locationConfig.apiUrlCities}/z_departaments.json`
+  );
 
   const typedData =
     /** @type {DepartmentsResponse} */ (data);
@@ -70,18 +64,15 @@ export const getDepartments = async () => {
 };
 
 /**
- * Obtiene las ciudades asociadas a un departamento.
- *
  * @param {string} departmentKey
  * @returns {Promise<City[]>}
  */
 export const getCities = async (
   departmentKey
 ) => {
-  const data =
-    await fetchJson(
-      `${locationConfig.apiUrlCities}/${departmentKey}.json`
-    );
+  const data = await fetchJson(
+    `${locationConfig.apiUrlCities}/${departmentKey}.json`
+  );
 
   const typedData =
     /** @type {CitiesResponse} */ (data);
