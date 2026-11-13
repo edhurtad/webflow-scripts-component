@@ -2,18 +2,23 @@ import {
   initBusinessFeeCalculator
 } from '../src/features/business-fee-calculator/controllers/business-fee-calculator.controller.js';
 
-const init = () => {
+const startBusinessFeeCalculator = () => {
   const root =
-    document.getElementById(
-      'fee-calc'
-    );
+    document.getElementById('fee-calc');
 
-  if (!root) return;
+  if (!root) {
+    return;
+  }
 
   initBusinessFeeCalculator(root);
 };
 
-document.addEventListener(
-  'DOMContentLoaded',
-  init
-);
+if (document.readyState === 'loading') {
+  document.addEventListener(
+    'DOMContentLoaded',
+    startBusinessFeeCalculator,
+    { once: true }
+  );
+} else {
+  startBusinessFeeCalculator();
+}

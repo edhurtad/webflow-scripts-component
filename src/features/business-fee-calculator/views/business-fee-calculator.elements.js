@@ -1,6 +1,27 @@
-export const getCalculatorElements = (root) => {
+const getRequiredElement = (
+  root,
+  id
+) => {
+  const selector =
+    `#fee-calc-${id}`;
+
+  const element =
+    root.querySelector(selector);
+
+  if (!element) {
+    throw new Error(
+      `Business Fee Calculator: falta el elemento ${selector}`
+    );
+  }
+
+  return element;
+};
+
+export const getCalculatorElements = (
+  root
+) => {
   const byId = (id) =>
-    root.querySelector(`#fee-calc-${id}`);
+    getRequiredElement(root, id);
 
   return {
     root,
@@ -41,6 +62,9 @@ export const getCalculatorElements = (root) => {
       byId('source-other')
     ],
 
+    comparisonBlock:
+      byId('comparison-block'),
+
     nequiBadge: byId('nequi-badge'),
     nequiNet: byId('nequi-net'),
     otherNet: byId('other-net'),
@@ -56,7 +80,8 @@ export const getCalculatorElements = (root) => {
     cardDetail: byId('card-detail'),
     cardFee: byId('card-fee'),
     cardTax: byId('card-tax'),
-    cardWithholding: byId('card-withholding'),
+    cardWithholding:
+      byId('card-withholding'),
     cardTotal: byId('card-total'),
 
     mobileCtas: [

@@ -1,4 +1,10 @@
 import {
+  COUNTRY_CODE,
+  PAYMENT_METHODS,
+  PAYMENT_SOURCES
+} from '../constants/business-fee-calculator.constants.js';
+
+import {
   SCENARIO_CONTENT
 } from '../constants/business-fee-calculator.content.js';
 
@@ -29,11 +35,16 @@ import {
   isValidSaleAmount
 } from '../validators/business-fee-calculator.validator.js';
 
-export const createCalculatorView = (elements) => {
+export const createCalculatorView = (
+  elements
+) => {
   const defaultPhoneHelp =
     elements.phoneHelp.textContent;
 
-  const setHidden = (element, hidden) => {
+  const setHidden = (
+    element,
+    hidden
+  ) => {
     element.hidden = hidden;
   };
 
@@ -92,7 +103,9 @@ export const createCalculatorView = (elements) => {
     );
 
     elements.savedPhone.textContent =
-      `+57 ${formatPhone(state.phone)}`;
+      `${COUNTRY_CODE} ${formatPhone(
+        state.phone
+      )}`;
   };
 
   const renderValidation = (state) => {
@@ -156,16 +169,57 @@ export const createCalculatorView = (elements) => {
     );
   };
 
+  const renderResultLayout = (
+    isCard,
+    source
+  ) => {
+    const showDetailFirst =
+      !isCard &&
+      source === PAYMENT_SOURCES.other;
+
+    if (showDetailFirst) {
+      elements.sourcesBox.after(
+        elements.linkDetail
+      );
+
+      elements.linkDetail.after(
+        elements.comparisonBlock
+      );
+
+      return;
+    }
+
+    elements.sourcesBox.after(
+      elements.comparisonBlock
+    );
+
+    elements.comparisonBlock.after(
+      elements.linkDetail
+    );
+  };
+
+  const renderComparisonBadge = (
+    result
+  ) => {
+    const nequiHasBetterRate =
+      result.net > result.comparisonNet;
+
+    setHidden(
+      elements.nequiBadge,
+      !nequiHasBetterRate
+    );
+  };
+
   const renderResult = (
     state,
     result
   ) => {
     const isCard =
-      state.method === 'card';
+      state.method === PAYMENT_METHODS.card;
 
     const scenarioKey =
       isCard
-        ? 'card'
+        ? PAYMENT_METHODS.card
         : state.source;
 
     const scenario =
@@ -199,6 +253,13 @@ export const createCalculatorView = (elements) => {
 
     renderSources(state.source);
 
+    renderResultLayout(
+      isCard,
+      state.source
+    );
+
+    renderComparisonBadge(result);
+
     elements.saleOutput.textContent =
       formatCurrency(state.amount);
 
@@ -206,7 +267,9 @@ export const createCalculatorView = (elements) => {
       formatCurrency(result.net);
 
     elements.otherNet.textContent =
-      formatCurrency(result.comparisonNet);
+      formatCurrency(
+        result.comparisonNet
+      );
 
     if (isCard) {
       elements.cardFee.textContent =
@@ -216,10 +279,14 @@ export const createCalculatorView = (elements) => {
         formatDiscount(result.tax);
 
       elements.cardWithholding.textContent =
-        formatDiscount(result.withholding);
+        formatDiscount(
+          result.withholding
+        );
 
       elements.cardTotal.textContent =
-        formatDiscount(result.discounts);
+        formatDiscount(
+          result.discounts
+        );
 
       return;
     }
@@ -242,7 +309,9 @@ export const createCalculatorView = (elements) => {
       formatDiscount(result.tax);
 
     elements.linkTotal.textContent =
-      formatDiscount(result.discounts);
+      formatDiscount(
+        result.discounts
+      );
   };
 
   const showView = (view) => {

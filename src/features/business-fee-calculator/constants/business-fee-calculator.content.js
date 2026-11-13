@@ -7,15 +7,15 @@ export const SCENARIO_CONTENT =
 
     nequi: {
       subtitle:
-        'Con link de pagos',
+        'Con link de pago',
       heading:
         'Si tu cliente paga desde Nequi o Bancolombia'
     },
 
     other: {
       subtitle:
-        'Con link de pagos',
+        'Con link de pago',
       heading:
-        'Si tu cliente paga desde otros bancos'
+        'Si tu cliente paga desde otros bancos que no son Nequi ni Bancolombia'
     }
   });
