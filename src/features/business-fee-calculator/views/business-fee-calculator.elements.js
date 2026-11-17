@@ -64,13 +64,12 @@ export const getCalculatorElements = (
 
     comparisonBlock:
       byId('comparison-block'),
-
     nequiBadge: byId('nequi-badge'),
     nequiNet: byId('nequi-net'),
     otherNet: byId('other-net'),
 
     linkDetail: byId('link-detail'),
-    linkHeading: byId('link-heading'),
+    linkNote: byId('link-note'),
     linkSale: byId('link-sale'),
     linkFeeLabel: byId('link-fee-label'),
     linkFee: byId('link-fee'),

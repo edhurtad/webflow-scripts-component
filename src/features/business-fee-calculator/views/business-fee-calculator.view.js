@@ -1,10 +1,4 @@
 import {
-  COUNTRY_CODE,
-  PAYMENT_METHODS,
-  PAYMENT_SOURCES
-} from '../constants/business-fee-calculator.constants.js';
-
-import {
   SCENARIO_CONTENT
 } from '../constants/business-fee-calculator.content.js';
 
@@ -15,6 +9,12 @@ import {
 import {
   VALIDATION_MESSAGES
 } from '../constants/business-fee-calculator.messages.js';
+
+import {
+  COUNTRY_CODE,
+  PAYMENT_METHODS,
+  PAYMENT_SOURCES
+} from '../constants/business-fee-calculator.constants.js';
 
 import {
   formatCurrency
@@ -56,7 +56,8 @@ export const createCalculatorView = (
   ) => {
     buttons.forEach((button) => {
       const active =
-        button.dataset[dataKey] === selectedValue;
+        button.dataset[dataKey] ===
+        selectedValue;
 
       button.classList.toggle(
         activeClass,
@@ -251,14 +252,12 @@ export const createCalculatorView = (
       isCard
     );
 
-    renderSources(state.source);
-
     renderResultLayout(
       isCard,
       state.source
     );
 
-    renderComparisonBadge(result);
+    renderSources(state.source);
 
     elements.saleOutput.textContent =
       formatCurrency(state.amount);
@@ -267,9 +266,9 @@ export const createCalculatorView = (
       formatCurrency(result.net);
 
     elements.otherNet.textContent =
-      formatCurrency(
-        result.comparisonNet
-      );
+      formatCurrency(result.comparisonNet);
+
+    renderComparisonBadge(result);
 
     if (isCard) {
       elements.cardFee.textContent =
@@ -279,20 +278,18 @@ export const createCalculatorView = (
         formatDiscount(result.tax);
 
       elements.cardWithholding.textContent =
-        formatDiscount(
-          result.withholding
-        );
+        formatDiscount(result.withholding);
 
       elements.cardTotal.textContent =
-        formatDiscount(
-          result.discounts
-        );
+        formatDiscount(result.discounts);
 
       return;
     }
 
-    elements.linkHeading.textContent =
-      content.heading;
+    elements.linkDetail.open = false;
+
+    elements.linkNote.textContent =
+      content.note;
 
     elements.linkSale.textContent =
       formatCurrency(state.amount);
@@ -309,9 +306,7 @@ export const createCalculatorView = (
       formatDiscount(result.tax);
 
     elements.linkTotal.textContent =
-      formatDiscount(
-        result.discounts
-      );
+      formatDiscount(result.discounts);
   };
 
   const showView = (view) => {
