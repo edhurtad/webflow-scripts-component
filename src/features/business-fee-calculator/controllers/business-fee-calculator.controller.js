@@ -52,6 +52,13 @@ import {
 export const initBusinessFeeCalculator = (
   root
 ) => {
+  if (
+    root.dataset.feeCalcInitialized ===
+    'true'
+  ) {
+    return;
+  }
+
   const elements =
     getCalculatorElements(root);
 
@@ -184,6 +191,19 @@ export const initBusinessFeeCalculator = (
     });
   };
 
+  /** @param {KeyboardEvent} event */
+  const simulateOnEnter = (event) => {
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    event.preventDefault();
+    simulate();
+  };
+
+  root.dataset.feeCalcInitialized =
+    'true';
+
   elements.methods.forEach((button) => {
     button.addEventListener(
       'click',
@@ -229,6 +249,11 @@ export const initBusinessFeeCalculator = (
     }
   );
 
+  elements.amountInput.addEventListener(
+    'keydown',
+    simulateOnEnter
+  );
+
   elements.phoneInput.addEventListener(
     'input',
     () => {
@@ -242,6 +267,11 @@ export const initBusinessFeeCalculator = (
 
       view.renderValidation(state);
     }
+  );
+
+  elements.phoneInput.addEventListener(
+    'keydown',
+    simulateOnEnter
   );
 
   elements.phoneInput.addEventListener(

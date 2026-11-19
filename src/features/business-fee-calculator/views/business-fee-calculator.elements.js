@@ -98,8 +98,6 @@ export const getCalculatorElements = (
       byId('source-other')
     ],
 
-    comparisonBlock:
-      byId('comparison-block'),
     nequiBadge: byId('nequi-badge'),
     nequiNet: byId('nequi-net'),
     otherNet: byId('other-net'),

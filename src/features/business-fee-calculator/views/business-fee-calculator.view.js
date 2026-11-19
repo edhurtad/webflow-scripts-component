@@ -237,6 +237,9 @@ export const createCalculatorView = (
       isCard
     );
 
+    elements.cardDetail.open = false;
+    elements.linkDetail.open = false;
+
     renderSources(state.source);
 
     elements.saleOutput.textContent =
@@ -265,8 +268,6 @@ export const createCalculatorView = (
 
       return;
     }
-
-    elements.linkDetail.open = false;
 
     elements.linkNote.textContent =
       content.note;
