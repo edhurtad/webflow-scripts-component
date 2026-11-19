@@ -43,6 +43,12 @@ import {
   createCalculatorView
 } from '../views/business-fee-calculator.view.js';
 
+/**
+ * Inicializa la calculadora dentro de su elemento raíz.
+ *
+ * @param {HTMLElement} root
+ * @returns {void}
+ */
 export const initBusinessFeeCalculator = (
   root
 ) => {
@@ -282,10 +288,10 @@ export const initBusinessFeeCalculator = (
     button.addEventListener(
       'click',
       () => {
-       const ctaName =
-         button.id === 'fee-calc-cta-get-nequi-business'
-          ? MOBILE_CTA.getNequiBusiness
-          : MOBILE_CTA.startCollecting;
+        const ctaName =
+          button.id === 'fee-calc-cta-get-nequi-business'
+            ? MOBILE_CTA.getNequiBusiness
+            : MOBILE_CTA.startCollecting;
 
         sendMobileCtaEvent({
           phone: state.phone,

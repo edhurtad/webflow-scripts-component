@@ -6,13 +6,15 @@ import {
   isValidBusinessPhone
 } from '../validators/business-fee-calculator.validator.js';
 
+/** @returns {{ phone: string, terms: true } | null} */
 export const readLeadSession = () => {
   try {
-    const savedLead = JSON.parse(
-      window.sessionStorage.getItem(
-        STORAGE_KEY
-      )
-    );
+    const savedLead =
+      JSON.parse(
+        window.sessionStorage.getItem(
+          STORAGE_KEY
+        )
+      );
 
     if (
       savedLead &&
@@ -35,6 +37,7 @@ export const readLeadSession = () => {
   return null;
 };
 
+/** @type {(phone: string) => boolean} */
 export const saveLeadSession = (
   phone
 ) => {

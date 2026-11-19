@@ -12,6 +12,16 @@ import {
   sendCleverTapEventEventOnly
 } from '../../../shared/services/clevertap.service.js';
 
+/**
+ * @typedef {Object} AnalyticsContext
+ * @property {string} phone
+ * @property {number} amount
+ * @property {'card' | 'link'} method
+ * @property {'nequi' | 'other'} source
+ * @property {keyof typeof FEE_SCENARIOS} scenarioKey
+ */
+
+/** @param {Record<string, string | number>} properties */
 const sendEvent = (properties) => {
   if (
     !window.clevertap?.onUserLogin?.push ||
@@ -36,6 +46,7 @@ const sendEvent = (properties) => {
   }
 };
 
+/** @param {AnalyticsContext & { interactionType: string }} eventData */
 const buildEventProperties = ({
   phone,
   interactionType,
@@ -47,6 +58,7 @@ const buildEventProperties = ({
   const scenario =
     FEE_SCENARIOS[scenarioKey];
 
+  /** @type {Record<string, string | number>} */
   const properties = {
     Phone: phone,
     interaction_type: interactionType,
@@ -64,6 +76,7 @@ const buildEventProperties = ({
   return properties;
 };
 
+/** @param {AnalyticsContext & { result: { fee: number, net: number } }} eventData */
 export const sendSimulationEvent = ({
   phone,
   amount,
@@ -86,6 +99,7 @@ export const sendSimulationEvent = ({
   });
 };
 
+/** @param {AnalyticsContext & { ctaName: string }} eventData */
 export const sendMobileCtaEvent = ({
   phone,
   amount,

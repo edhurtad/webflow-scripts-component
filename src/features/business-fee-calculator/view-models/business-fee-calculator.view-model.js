@@ -16,17 +16,23 @@ import {
   formatNumber
 } from '../../../shared/utils/formatters/number.formatter.js';
 
+/** @type {(value: string) => number} */
 export const normalizeSaleAmount = (
   value
 ) => {
-  const digits = onlyNumbers(value)
-    .slice(0, MAX_AMOUNT_DIGITS);
+  const digits =
+    onlyNumbers(value)
+      .slice(
+        0,
+        MAX_AMOUNT_DIGITS
+      );
 
   return digits
     ? Number(digits)
     : 0;
 };
 
+/** @type {(value: string) => string} */
 export const normalizeBusinessPhone = (
   value
 ) => {
@@ -39,7 +45,9 @@ export const normalizeBusinessPhone = (
   const nationalPhone =
     digits.length > PHONE_LENGTH &&
     digits.startsWith(countryCode)
-      ? digits.slice(countryCode.length)
+      ? digits.slice(
+          countryCode.length
+        )
       : digits;
 
   return nationalPhone.slice(
@@ -48,6 +56,7 @@ export const normalizeBusinessPhone = (
   );
 };
 
+/** @type {(amount: number) => string} */
 export const formatSaleAmountInput = (
   amount
 ) => {
@@ -56,6 +65,7 @@ export const formatSaleAmountInput = (
     : '';
 };
 
+/** @type {(rate: number) => string} */
 export const formatPercentage = (
   rate
 ) => {
@@ -66,6 +76,7 @@ export const formatPercentage = (
   )}%`;
 };
 
+/** @type {(amount: number) => string} */
 export const formatDiscount = (
   amount
 ) => {

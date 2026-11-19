@@ -11,6 +11,10 @@ import {
   isValidPhoneNumber
 } from '../../../shared/validators/phone.validator.js';
 
+/**
+ * @param {number} amount
+ * @returns {boolean}
+ */
 export const isValidSaleAmount = (
   amount
 ) => {
@@ -20,6 +24,10 @@ export const isValidSaleAmount = (
   );
 };
 
+/**
+ * @param {string} phone
+ * @returns {boolean}
+ */
 export const isValidBusinessPhone = (
   phone
 ) => {
@@ -35,10 +43,15 @@ export const isValidBusinessPhone = (
   );
 };
 
+/**
+ * @param {unknown} method
+ * @returns {method is 'card' | 'link'}
+ */
 export const isValidPaymentMethod = (
   method
 ) => {
-  return Object
-    .values(PAYMENT_METHODS)
-    .includes(method);
+  return (
+    method === PAYMENT_METHODS.card ||
+    method === PAYMENT_METHODS.link
+  );
 };

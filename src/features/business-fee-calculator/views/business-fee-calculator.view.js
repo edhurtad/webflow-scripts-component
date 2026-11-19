@@ -12,8 +12,7 @@ import {
 
 import {
   COUNTRY_CODE,
-  PAYMENT_METHODS,
-  PAYMENT_SOURCES
+  PAYMENT_METHODS
 } from '../constants/business-fee-calculator.constants.js';
 
 import {
@@ -35,6 +34,14 @@ import {
   isValidSaleAmount
 } from '../validators/business-fee-calculator.validator.js';
 
+/** @typedef {ReturnType<typeof import('./business-fee-calculator.elements.js').getCalculatorElements>} CalculatorElements */
+/** @typedef {ReturnType<typeof import('../services/fee-calculation.service.js').calculateFees>} FeeCalculationResult */
+
+/**
+ * Crea las funciones encargadas de renderizar la calculadora.
+ *
+ * @param {CalculatorElements} elements
+ */
 export const createCalculatorView = (
   elements
 ) => {
@@ -170,35 +177,7 @@ export const createCalculatorView = (
     );
   };
 
-  const renderResultLayout = (
-    isCard,
-    source
-  ) => {
-    const showDetailFirst =
-      !isCard &&
-      source === PAYMENT_SOURCES.other;
-
-    if (showDetailFirst) {
-      elements.sourcesBox.after(
-        elements.linkDetail
-      );
-
-      elements.linkDetail.after(
-        elements.comparisonBlock
-      );
-
-      return;
-    }
-
-    elements.sourcesBox.after(
-      elements.comparisonBlock
-    );
-
-    elements.comparisonBlock.after(
-      elements.linkDetail
-    );
-  };
-
+  /** @param {FeeCalculationResult} result */
   const renderComparisonBadge = (
     result
   ) => {
@@ -211,6 +190,12 @@ export const createCalculatorView = (
     );
   };
 
+  /**
+   * Renderiza el resultado correspondiente al escenario seleccionado.
+   *
+   * @param {Object} state
+   * @param {FeeCalculationResult} result
+   */
   const renderResult = (
     state,
     result
@@ -250,11 +235,6 @@ export const createCalculatorView = (
     setHidden(
       elements.linkDetail,
       isCard
-    );
-
-    renderResultLayout(
-      isCard,
-      state.source
     );
 
     renderSources(state.source);
@@ -309,6 +289,7 @@ export const createCalculatorView = (
       formatDiscount(result.discounts);
   };
 
+  /** @param {'form' | 'result'} view */
   const showView = (view) => {
     setHidden(
       elements.formView,

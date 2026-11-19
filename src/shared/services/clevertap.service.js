@@ -1,3 +1,11 @@
+/**
+ * Envía un evento a CleverTap e identifica al usuario cuando
+ * las propiedades incluyen un número de celular.
+ *
+ * @param {string} eventName
+ * @param {Record<string, unknown>} [properties={}]
+ * @returns {void}
+ */
 export const sendCleverTapEventEventOnly = (
   eventName,
   properties = {}

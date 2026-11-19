@@ -1,6 +1,16 @@
+/**
+ * Busca un elemento obligatorio y comprueba su tipo.
+ *
+ * @template {HTMLElement} T
+ * @param {HTMLElement} root
+ * @param {string} id
+ * @param {new (...args: any[]) => T} ElementClass
+ * @returns {T}
+ */
 const getRequiredElement = (
   root,
-  id
+  id,
+  ElementClass
 ) => {
   const selector =
     `#fee-calc-${id}`;
@@ -8,20 +18,46 @@ const getRequiredElement = (
   const element =
     root.querySelector(selector);
 
-  if (!element) {
+  if (!(element instanceof ElementClass)) {
     throw new Error(
-      `Business Fee Calculator: falta el elemento ${selector}`
+      `Business Fee Calculator: falta el elemento ${selector} o tiene un tipo incorrecto`
     );
   }
 
   return element;
 };
 
+/**
+ * Obtiene los elementos requeridos por la calculadora.
+ *
+ * @param {HTMLElement} root
+ */
 export const getCalculatorElements = (
   root
 ) => {
+  /** @type {(id: string) => HTMLElement} */
   const byId = (id) =>
-    getRequiredElement(root, id);
+    getRequiredElement(
+      root,
+      id,
+      HTMLElement
+    );
+
+  /** @type {(id: string) => HTMLInputElement} */
+  const inputById = (id) =>
+    getRequiredElement(
+      root,
+      id,
+      HTMLInputElement
+    );
+
+  /** @type {(id: string) => HTMLDetailsElement} */
+  const detailsById = (id) =>
+    getRequiredElement(
+      root,
+      id,
+      HTMLDetailsElement
+    );
 
   return {
     root,
@@ -35,13 +71,13 @@ export const getCalculatorElements = (
     ],
     methodError: byId('method-error'),
 
-    amountInput: byId('amount'),
+    amountInput: inputById('amount'),
     amountError: byId('amount-error'),
 
     leadBox: byId('lead'),
-    phoneInput: byId('phone'),
+    phoneInput: inputById('phone'),
     phoneHelp: byId('phone-help'),
-    consentInput: byId('consent'),
+    consentInput: inputById('consent'),
     consentError: byId('consent-error'),
 
     savedBox: byId('saved'),
@@ -68,7 +104,8 @@ export const getCalculatorElements = (
     nequiNet: byId('nequi-net'),
     otherNet: byId('other-net'),
 
-    linkDetail: byId('link-detail'),
+    linkDetail:
+      detailsById('link-detail'),
     linkNote: byId('link-note'),
     linkSale: byId('link-sale'),
     linkFeeLabel: byId('link-fee-label'),
@@ -76,7 +113,8 @@ export const getCalculatorElements = (
     linkTax: byId('link-tax'),
     linkTotal: byId('link-total'),
 
-    cardDetail: byId('card-detail'),
+    cardDetail:
+      detailsById('card-detail'),
     cardFee: byId('card-fee'),
     cardTax: byId('card-tax'),
     cardWithholding:

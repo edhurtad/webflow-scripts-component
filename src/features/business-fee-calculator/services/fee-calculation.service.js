@@ -4,6 +4,12 @@ import {
   TAX_RATES
 } from '../constants/business-fee-calculator.rates.js';
 
+/**
+ * Calcula las comisiones y valores netos de una venta.
+ *
+ * @param {number} amount Valor de la venta en pesos.
+ * @param {keyof typeof FEE_SCENARIOS} scenarioKey Escenario de cálculo.
+ */
 export const calculateFees = (
   amount,
   scenarioKey
